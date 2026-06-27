@@ -50,8 +50,8 @@ Automotive Strategy Accountability Audit
 - クリック可能な選択領域と静的な説明領域の見た目は分離済み
 - 証拠リンク画面の横はみ出しは修正済み
 - Toyota evidence の一部は公式URL付き正式出典へ更新済み
-- Honda evidence は 8件中7件を公式URLまたは正式アーカイブURL付き出典へ更新済み
-- Honda/GM 量販EV共同開発中止（HON-E-004）は公式URL未確認のため、報道URL精査継続として残している
+- Honda evidence は 8件すべてに公式URL・正式アーカイブURL・信頼できる報道URLのいずれかを追加済み
+- Honda/GM 量販EV共同開発中止（HON-E-004）は公式発表URL未確認のため、Reuters 報道URLを信頼できる報道出典として採用済み
 - Toyota / Honda 両ケースへ第三者評価対応フィールドを導入済み（evidenceAccessScope / uncertaintyReason / intendedUse / evidenceWeight / adversarialReview）
 ```
 
@@ -332,7 +332,7 @@ PID: 11688
 
 ### 7.2 evidence の正式出典化
 
-Toyota evidence は一部を公式URL付き正式出典へ更新済み。Honda evidence は 8件中7件を公式URLまたは正式アーカイブURL付きに更新済み。Honda/GM 量販EV共同開発中止（HON-E-004）と、Toyota の後年販売資料・中国EV競争資料は正式URLや文書タイトルの精査が未完了。
+Toyota evidence は一部を公式URL付き正式出典へ更新済み。Honda evidence は 8件すべてに公式URL・正式アーカイブURL・信頼できる報道URLのいずれかを追加済み。Honda/GM 量販EV共同開発中止（HON-E-004）は公式発表URL未確認のため Reuters 報道URLを採用している。Toyota の後年販売資料・中国EV競争資料は正式URLや文書タイトルの精査が未完了。
 
 次にやる場合は、公式資料を優先する。
 
@@ -347,7 +347,7 @@ Honda:
 - 2021年 EV/FCEV 2040年100%目標発表
 - 2021〜2022年 電動化戦略説明会資料
 - 2022年 Honda/GM 量販価格帯EV共同開発発表
-- 2023年 Honda/GM 量販EV共同開発中止に関する発表・報道（未完了: 公式URL未確認、報道URL精査継続）
+- 2023年 Honda/GM 量販EV共同開発中止に関する Reuters 報道（公式発表URL未確認、信頼できる報道URL確認済み）
 - 統合報告書 / 有価証券報告書 / 決算説明資料
 ```
 

@@ -609,7 +609,7 @@ HON-E-003:
 Honda / GM, 2022年 量販価格帯EV共同開発発表
 
 HON-E-004:
-Honda / GM, 2023年 量販EV共同開発中止に関する発表・報道
+Honda / GM, 2023年 量販EV共同開発中止に関する Reuters 報道
 
 HON-E-005:
 Honda, 2024年 電動化・EV投資・次世代EV関連発表
