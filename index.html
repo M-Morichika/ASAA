@@ -1,0 +1,96 @@
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Automotive Strategy Accountability Audit</title>
+    <link rel="stylesheet" href="styles.css?v=20260627-auto-ev-shift-r7">
+  </head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar" aria-label="監査ナビゲーション">
+        <div class="brand-block">
+          <p class="eyebrow">Automotive Strategy Accountability Audit</p>
+          <h1>企業戦略監査</h1>
+          <p>ケース読込中</p>
+        </div>
+
+        <label class="case-picker" for="case-selector">
+          <span>監査ケース</span>
+          <select id="case-selector" aria-label="監査ケースを選択"></select>
+        </label>
+
+        <div id="counterpart-nav" class="counterpart-nav" hidden></div>
+
+        <nav class="nav-tabs" aria-label="画面切り替え">
+          <button class="nav-tab is-active" type="button" data-view="overview">
+            <span>戦略概要</span>
+          </button>
+          <button class="nav-tab" type="button" data-view="timeline">
+            <span>タイムライン</span>
+          </button>
+          <button class="nav-tab" type="button" data-view="prewar">
+            <span>投資前チェック</span>
+          </button>
+          <button class="nav-tab" type="button" data-view="assessment">
+            <span>経営判断監査</span>
+          </button>
+          <button class="nav-tab" type="button" data-view="evidence">
+            <span>証拠リンク</span>
+          </button>
+          <button class="nav-tab" type="button" data-view="opinion">
+            <span>監査意見</span>
+          </button>
+        </nav>
+
+        <section class="sidebar-panel">
+          <h2>設計思想</h2>
+          <p style="font-size: 0.85rem; line-height: 1.5; color: var(--text-secondary); margin: 0;">
+            戦略表明前後に、その時点で利用可能だった情報だけを使って、<br>
+            需要・規制・電池・SDV・資本配分リスクを記録し、<br>
+            後年に経営陣の説明責任と判断過程を検証できるようにする。
+          </p>
+        </section>
+
+        <section class="sidebar-panel">
+          <h2>監査の原則</h2>
+          <ul>
+            <li>反証証拠を隠さない</li>
+            <li>言えることと言えないことを分ける</li>
+            <li>判断時点より後の結果を直接証拠にしない</li>
+          </ul>
+        </section>
+      </aside>
+
+      <main class="main-panel">
+        <header class="topbar">
+          <div>
+            <p class="eyebrow" id="view-kicker">戦略概要</p>
+            <h2 id="view-title" tabindex="-1">この企業戦略監査の暫定結論は何か？</h2>
+          </div>
+          <div class="rating-pill" aria-label="補助格付け">
+            <span>暫定</span>
+            <strong>--</strong>
+          </div>
+        </header>
+
+        <section id="view-root" class="view-root"></section>
+      </main>
+
+      <div id="sr-status" class="sr-only" role="status" aria-live="polite"></div>
+    </div>
+
+    <script type="module" src="app.js?v=20260627-auto-ev-shift-r7"></script>
+  </body>
+</html>
+
+
+
+
+
+
+
+
+
+
+
