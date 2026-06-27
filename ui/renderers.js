@@ -368,7 +368,7 @@ function renderEvidence() {
   return `
     <div class="evidence-layout">
       <section class="section">
-        <h3>証拠グラフ</h3>
+        <h3>証拠リンク</h3>
         <div class="filter-bar">
           ${renderFilterSelect("type", "証拠種類", filterOptions.type)}
           ${renderFilterSelect("authenticity", "真正性", filterOptions.authenticity)}

@@ -3,6 +3,12 @@ import { readFileSync } from "node:fs";
 const checks = [
   {
     file: "index.html",
+    label: "stylesheet",
+    pattern: /styles\.css\?v=([A-Za-z0-9_-]+)/g,
+  },
+  {
+    file: "index.html",
+    label: "entry script",
     pattern: /app\.js\?v=([A-Za-z0-9_-]+)/g,
   },
   {
@@ -26,11 +32,11 @@ for (const check of checks) {
   const source = readFileSync(check.file, "utf8");
   const matches = [...source.matchAll(check.pattern)].map((match) => match[1]);
   if (matches.length === 0) {
-    missing.push(check.file);
+    missing.push(check.label ? `${check.file} (${check.label})` : check.file);
     continue;
   }
   for (const version of matches) {
-    found.push({ file: check.file, version });
+    found.push({ file: check.label ? `${check.file} (${check.label})` : check.file, version });
   }
 }
 
@@ -48,4 +54,4 @@ if (missing.length > 0 || versions.size !== 1) {
 }
 
 const [version] = versions;
-console.log(`cache-busting ok: ${version} (${found.length} imports checked)`);
+console.log(`cache-busting ok: ${version} (${found.length} version markers checked)`);

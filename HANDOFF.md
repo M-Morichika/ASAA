@@ -268,7 +268,7 @@ node tools/check-cache-busting.mjs
 結果。
 
 ```text
-cache-busting ok: 20260627-auto-ev-shift-r7 (7 imports checked)
+cache-busting ok: 20260627-auto-ev-shift-r7 (8 version markers checked)
 ```
 
 ### 5.3 Browser smoke test
@@ -311,11 +311,9 @@ PID: 11688
 優先順。
 
 ```text
-1. 証拠グラフの表記を「証拠リンク」へ完全統一するか検討する
-2. Toyota / Honda の evidence を実URL・正式出典付きに精査する
-3. 後年資料の timeFit 設計を見直す
-4. 必要なら cache-busting checker を stylesheet の `?v=` も見るように拡張する
-5. 必要なら browser smoke test を再実行する
+1. Toyota / Honda の evidence を実URL・正式出典付きに精査する
+2. 後年資料の timeFit 設計を見直す
+3. 必要なら browser smoke test を再実行する
 ```
 
 ---
@@ -324,16 +322,8 @@ PID: 11688
 
 ### 7.1 証拠リンク表記の統一
 
-現在、主要ナビゲーションと多くのUIでは `証拠リンク` を使っている。  
-ただし、`ui/renderers.js` には見出しとして `証拠グラフ` が一部残っている。
-
-```text
-証拠グラフ
-→ 証拠リンク
-```
-
-完全統一する場合は、表示文言だけを変える。  
-内部の evidence graph / claim-evidence link という構造まで急いで改名する必要はない。
+主要ナビゲーション、証拠画面見出し、関連説明は `証拠リンク` に統一済み。
+内部の evidence graph / claim-evidence link という構造名は、互換性と意味の明確さを優先して急いで改名しない。
 
 ### 7.2 evidence の正式出典化
 
@@ -382,11 +372,11 @@ CANON との整合を優先するなら案A。
 現在の確認結果は以下。
 
 ```text
-cache-busting ok: 20260627-auto-ev-shift-r7 (7 imports checked)
+cache-busting ok: 20260627-auto-ev-shift-r7 (8 version markers checked)
 ```
 
-`index.html` では `styles.css?v=20260627-auto-ev-shift-r7` も付与済み。  
-ただし `tools/check-cache-busting.mjs` は imports checked の対象が 7 件で、stylesheet の `?v=` までは確認していない可能性がある。必要なら後で checker を拡張する。
+`tools/check-cache-busting.mjs` は `index.html` の `styles.css?v=20260627-auto-ev-shift-r7` も確認対象に含めるよう更新済み。
+出力件数は JavaScript import だけではなく stylesheet を含むため、`version markers checked` として数える。
 
 ---
 
