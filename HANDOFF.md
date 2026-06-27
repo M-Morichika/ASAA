@@ -45,10 +45,11 @@ Automotive Strategy Accountability Audit
 - 既定ケースは toyota-multi-pathway-2021
 - counterpartCaseId は双方向リンク済み
 - rating は両ケースとも 未確定
-- cache-busting は 20260627-auto-ev-shift-r7 に統一済み
+- cache-busting は 20260627-auto-ev-shift-r8 に統一済み
 - UI文言は企業戦略監査向けに自然化済み
 - クリック可能な選択領域と静的な説明領域の見た目は分離済み
 - 証拠リンク画面の横はみ出しは修正済み
+- Toyota evidence の一部は公式URL付き正式出典へ更新済み
 ```
 
 ---
@@ -268,7 +269,7 @@ node tools/check-cache-busting.mjs
 結果。
 
 ```text
-cache-busting ok: 20260627-auto-ev-shift-r7 (8 version markers checked)
+cache-busting ok: 20260627-auto-ev-shift-r8 (8 version markers checked)
 ```
 
 ### 5.3 Browser smoke test
@@ -311,9 +312,10 @@ PID: 11688
 優先順。
 
 ```text
-1. Toyota / Honda の evidence を実URL・正式出典付きに精査する
-2. 後年資料の timeFit 設計を見直す
-3. 必要なら browser smoke test を再実行する
+1. Honda の evidence を実URL・正式出典付きに精査する
+2. Toyota evidence の残り（後年販売資料・中国EV競争資料）を精査する
+3. 後年資料の timeFit 設計を見直す
+4. 必要なら browser smoke test を再実行する
 ```
 
 ---
@@ -327,7 +329,7 @@ PID: 11688
 
 ### 7.2 evidence の正式出典化
 
-現在の evidence は代表資料ラベルであり、正式URLや文書タイトルの精査は未完了。
+Toyota evidence は一部を公式URL付き正式出典へ更新済み。Honda evidence と、Toyota の後年販売資料・中国EV競争資料は正式URLや文書タイトルの精査が未完了。
 
 次にやる場合は、公式資料を優先する。
 
@@ -372,10 +374,10 @@ CANON との整合を優先するなら案A。
 現在の確認結果は以下。
 
 ```text
-cache-busting ok: 20260627-auto-ev-shift-r7 (8 version markers checked)
+cache-busting ok: 20260627-auto-ev-shift-r8 (8 version markers checked)
 ```
 
-`tools/check-cache-busting.mjs` は `index.html` の `styles.css?v=20260627-auto-ev-shift-r7` も確認対象に含めるよう更新済み。
+`tools/check-cache-busting.mjs` は `index.html` の `styles.css?v=20260627-auto-ev-shift-r8` も確認対象に含めるよう更新済み。
 出力件数は JavaScript import だけではなく stylesheet を含むため、`version markers checked` として数える。
 
 ---

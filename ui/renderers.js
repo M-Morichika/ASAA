@@ -11,7 +11,7 @@ import {
   resolveStatus,
   statusClass,
   statusOrder,
-} from "../data/auditSchema.js?v=20260627-auto-ev-shift-r7";
+} from "../data/auditSchema.js?v=20260627-auto-ev-shift-r8";
 
 export function createRenderers(auditData, state) {
 function getAssumption(id) {
@@ -452,7 +452,7 @@ function renderEvidence() {
               <div class="metric-row"><dt>ID</dt><dd>${selectedEvidence?.id || selectedLink.evidenceId}</dd></div>
               <div class="metric-row"><dt>タイトル</dt><dd>${selectedEvidence?.title || missingEvidenceTitle(selectedLink)}</dd></div>
               <div class="metric-row"><dt>種類</dt><dd>${selectedEvidence?.type || "未確認"}</dd></div>
-              <div class="metric-row"><dt>出典</dt><dd>${selectedEvidence?.source || "証拠データ未接続"}</dd></div>
+              <div class="metric-row"><dt>出典</dt><dd>${selectedEvidence?.sourceUrl ? `<a href="${selectedEvidence.sourceUrl}" target="_blank" rel="noopener noreferrer">${selectedEvidence.source || "公式資料"}</a>` : selectedEvidence?.source || "証拠データ未接続"}</dd></div>
               <div class="metric-row"><dt>資料状態</dt><dd>${selectedEvidence?.collectionState || "要修正"}</dd></div>
             </dl>
             <p class="metric-group-label">時点</p>
