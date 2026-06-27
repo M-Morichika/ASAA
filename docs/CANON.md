@@ -1242,3 +1242,422 @@ Phase E:
 ```
 
 初期実装では、E0〜E4 と KO基準までを優先する。dependencyRules と scorePrototype は、正典上の仕様候補として定義するが、すぐに UI 実装しない。
+
+## 30. evidenceAccessScope：利用可能情報の境界
+
+第三者評価で指摘された最大論点は、「当時利用可能だった情報」の境界である。
+
+企業ケースでは、以下を明確に分ける。
+
+```text
+1. 公開情報として当時利用可能だった資料
+2. 経営陣・取締役会が実際にアクセスしていた可能性のある内部資料
+3. 後年資料から再構成された当時状況
+```
+
+初期 Toyota / Honda ケースは、原則として `public_osint` 監査である。
+
+### 30.1 基本構造
+
+```js
+evidenceAccessScope: {
+  mode: "public_osint" | "internal_available" | "retrospective_reconstruction",
+  description: "",
+  limitation: "",
+}
+```
+
+### 30.2 mode 定義
+
+```text
+public_osint:
+公開資料・同時代報道・公開市場データのみを扱う。
+外部株主・研究者・読者が再現可能な監査モード。
+初期 Toyota / Honda ケースはこのモードとする。
+
+internal_available:
+社内資料・取締役会資料・投資審査資料・採算見積もりを含む。
+事業会社内部レビューや監査委員会レビュー向け。
+公開版では通常使用しない。
+
+retrospective_reconstruction:
+後年資料・回顧・報道・後年分析を用いて当時判断を再構成する。
+ただし、2021年判断の直接証拠としては扱わない。
+```
+
+### 30.3 初期ケースでの標準値
+
+```js
+evidenceAccessScope: {
+  mode: "public_osint",
+  description: "公開資料・公式発表・同時代報道・公開市場データに基づく外部監査。",
+  limitation: "取締役会資料、内部投資審査、採算見積もり、社内反対意見は通常確認できないため、経営陣の実際の認識は断定しない。",
+}
+```
+
+### 30.4 禁止事項
+
+```text
+- public_osint 監査で「内部では検討していなかった」と断定しない。
+- retrospective_reconstruction を ex-ante 直接証拠として扱わない。
+- internal_available 資料がないのに、取締役会や経営会議の実態を断定しない。
+```
+
+---
+
+## 31. evidenceWeight：証拠の重み付け
+
+E0〜E4 は「評価形跡の確認可能性」を表す。
+一方、`evidenceWeight` は、個別証拠の監査上の重みを表す。
+
+同じ E3 でも、企業公式資料、同時代の独立分析、匿名報道、後年分析では重みが異なる。
+
+### 31.1 基本構造
+
+```js
+evidenceWeight: {
+  sourceProximity: "primary" | "official" | "independent_same_time" | "retrospective" | "anonymous",
+  temporalFit: "direct" | "indirect" | "post_hoc",
+  independence: "single_source" | "multiple_independent",
+  decisionMakerAccess: "clear" | "likely" | "unknown",
+  weight: "low" | "medium" | "high",
+  rationale: "",
+}
+```
+
+### 31.2 sourceProximity
+
+```text
+primary:
+当該企業または当該意思決定主体の一次資料。
+例：公式発表、事業説明会資料、有価証券報告書、統合報告書。
+
+official:
+企業公式ではあるが、意思決定時点そのものから少し離れた説明資料。
+例：後年の公式説明、サステナビリティ資料。
+
+independent_same_time:
+同時代の独立外部資料。
+例：IEA、BloombergNEF、ACEA、同時代報道、業界分析。
+
+retrospective:
+後年分析、後年報道、後年販売実績、後年の戦略再評価。
+
+anonymous:
+匿名証言、未確認報道、出所が限定的な情報。
+```
+
+### 31.3 temporalFit
+
+```text
+direct:
+判断時点に存在し、当時判断に直接関係する資料。
+
+indirect:
+当時状況の再構成には使えるが、直接資料ではない。
+
+post_hoc:
+後年に作られた資料。直接根拠ではなく事後対照として扱う。
+```
+
+### 31.4 decisionMakerAccess
+
+```text
+clear:
+当該企業自身の発表・資料であり、経営陣の接触可能性が明白。
+
+likely:
+同時代の主要業界資料・規制資料であり、通常の経営判断で参照された可能性が高い。
+
+unknown:
+経営陣が認識していたか確認できない。
+```
+
+### 31.5 weight の目安
+
+```text
+high:
+一次資料または複数独立資料で確認でき、時点性も合う。
+
+medium:
+同時代外部資料または公式資料だが、判断への接続が間接的。
+
+low:
+後年資料、匿名資料、単独報道、または時点性に制約が大きい。
+```
+
+重要：`weight: "high"` でも、`cannotSay` は必ず残す。
+高重み証拠は万能証拠ではない。
+
+---
+
+## 32. uncertaintyReason：未確定理由の分類
+
+`rating: "未確定"` は、技術的未確定と認識論的未確定を区別する必要がある。
+
+そのため、各ケースに `uncertaintyReason` を持たせる。
+
+### 32.1 基本構造
+
+```js
+uncertaintyReason: [
+  "case_not_selected",
+  "evidence_insufficient",
+  "evidence_conflicting",
+  "internal_documents_unavailable",
+  "outcome_not_mature",
+  "scope_boundary_unresolved",
+  "methodology_under_revision",
+]
+```
+
+### 32.2 定義
+
+```text
+case_not_selected:
+UI上ケース未選択など、技術的理由により表示できない。
+
+evidence_insufficient:
+主要な証拠が不足している。
+
+evidence_conflicting:
+支持証拠と反証証拠が拮抗している。
+
+internal_documents_unavailable:
+内部資料が未公開で、経営陣の実際の認識を断定できない。
+
+outcome_not_mature:
+産業転換や戦略成果がまだ成熟しておらず、成否を判断できない。
+
+scope_boundary_unresolved:
+どこまでを当該ケースの責任範囲に含めるか未整理。
+
+methodology_under_revision:
+評価ルーブリックや重み付け設計が更新中。
+```
+
+### 32.3 Toyota / Honda 初期値
+
+```js
+uncertaintyReason: [
+  "internal_documents_unavailable",
+  "outcome_not_mature",
+  "evidence_conflicting",
+]
+```
+
+この指定により、`未確定` が単なるプレースホルダーではなく、認識論的留保であることを示す。
+
+---
+
+## 33. adversarialReview：構造的反論レビュー
+
+「反証証拠を隠さない」を宣言で終わらせないため、主要ケースには `adversarialReview` を導入できる。
+
+これは、批判側・擁護側の最強主張を明示する構造である。
+
+### 33.1 基本構造
+
+```js
+adversarialReview: {
+  prosecution: [
+    {
+      claimId: "",
+      strongestArgument: "",
+      strongestEvidenceLinks: [],
+      caveat: "",
+    },
+  ],
+  defense: [
+    {
+      claimId: "",
+      strongestArgument: "",
+      strongestEvidenceLinks: [],
+      caveat: "",
+    },
+  ],
+  unresolvedTensions: [],
+}
+```
+
+### 33.2 prosecution / defense の意味
+
+```text
+prosecution:
+監査上の懸念・批判側の最強主張。
+例：BEV/SDV転換遅れ、EV需要過大評価、提携依存過小評価。
+
+defense:
+当該戦略を擁護する最強主張。
+例：リアルオプション戦略、先行コミットメント、地域差対応、能力補完。
+
+unresolvedTensions:
+現時点で決着できない論点。
+```
+
+### 33.3 Toyota 例
+
+```js
+adversarialReview: {
+  prosecution: [
+    {
+      claimId: "toy_claim_bev_sdv_delay_risk",
+      strongestArgument: "multi-pathway は地域差対応として説明可能だが、中国BEV・SDV競争の速度を過小評価し、戦略集中を遅らせた可能性がある。",
+      strongestEvidenceLinks: ["TOY-EL-..."],
+      caveat: "ただし、後年のBEV競争激化は2021年判断の直接証拠ではない。",
+    },
+  ],
+  defense: [
+    {
+      claimId: "toy_claim_multi_pathway_as_real_option",
+      strongestArgument: "2021年前後の地域差、電池制約、充電インフラ未成熟、HEV収益力を踏まえると、multi-pathway は合理的なリアルオプション戦略だった可能性がある。",
+      strongestEvidenceLinks: ["TOY-EL-..."],
+      caveat: "ただし、実行能力やSDV対応の十分性までは断定できない。",
+    },
+  ],
+  unresolvedTensions: [
+    "HEV収益による時間稼ぎとBEV/SDV集中遅れの境界",
+    "地域差対応と中国市場での競争遅れの切り分け",
+  ],
+}
+```
+
+### 33.4 Honda 例
+
+```js
+adversarialReview: {
+  prosecution: [
+    {
+      claimId: "hon_claim_ev_demand_profitability_overestimated",
+      strongestArgument: "Honda はEV需要、量販EV採算、GM提携継続性を過大評価した可能性がある。",
+      strongestEvidenceLinks: ["HON-EL-..."],
+      caveat: "ただし、後年の戦略再評価だけで2021年判断の不合理性を直接証明することはできない。",
+    },
+  ],
+  defense: [
+    {
+      claimId: "hon_claim_ev_concentration_as_forward_commitment",
+      strongestArgument: "脱炭素規制、ZEV政策、将来のEV市場拡大を前提にすれば、EV/FCEV集中は合理的な先行コミットメントだった可能性がある。",
+      strongestEvidenceLinks: ["HON-EL-..."],
+      caveat: "ただし、電池・SDV・提携依存の下方シナリオが十分に公開説明されていたとは限らない。",
+    },
+  ],
+  unresolvedTensions: [
+    "合理的な先行投資と需要・収益性の過大評価の境界",
+    "GM提携による能力補完と外部依存リスクの境界",
+  ],
+}
+```
+
+---
+
+## 34. intendedUse：利用文脈の明示
+
+このツールが誰のために何を生み出すのかを明確にする。
+
+同じケースでも、株主向け、社内改善向け、研究向けでは必要な証拠水準と結論形式が異なる。
+
+### 34.1 基本構造
+
+```js
+intendedUse: {
+  primary: "research_case_study" | "board_review" | "investor_due_diligence" | "strategy_training",
+  secondary: [],
+  notFor: [],
+}
+```
+
+### 34.2 用途定義
+
+```text
+research_case_study:
+研究・教材・公開ケーススタディ向け。
+公開資料に基づく再現可能性を重視する。
+
+board_review:
+取締役会・社内レビュー向け。
+内部資料を含めた意思決定改善に使う。
+
+investor_due_diligence:
+株主・投資家が経営陣の説明責任や資本配分を検証するために使う。
+
+strategy_training:
+戦略部門・経営企画・MBA教材など、意思決定訓練に使う。
+```
+
+### 34.3 notFor
+
+初期公開版では、以下を明示する。
+
+```js
+notFor: [
+  "legal_liability_determination",
+  "investment_recommendation",
+  "definitive_management_blame",
+]
+```
+
+意味。
+
+```text
+legal_liability_determination:
+法的責任認定には使わない。
+
+investment_recommendation:
+株式売買や投資推奨には使わない。
+
+definitive_management_blame:
+経営者個人の断罪には使わない。
+```
+
+### 34.4 初期 Toyota / Honda ケースの標準値
+
+```js
+intendedUse: {
+  primary: "research_case_study",
+  secondary: [
+    "strategy_training",
+    "investor_due_diligence",
+  ],
+  notFor: [
+    "legal_liability_determination",
+    "investment_recommendation",
+    "definitive_management_blame",
+  ],
+}
+```
+
+---
+
+## 35. 第三者評価への対応方針
+
+第三者評価では、以下の批判が示された。
+
+```text
+1. 「利用可能な情報」の境界問題
+2. 5リスク軸の粒度・相互作用問題
+3. 「未確定」の認識論的地位
+4. 反証証拠を隠さないための運用担保
+5. 利用文脈の不明確さ
+```
+
+本 CANON では、以下で対応する。
+
+```text
+1. evidenceAccessScope
+   公開情報・内部情報・事後再構成を分ける。
+
+2. dependencyRules
+   リスク軸間の相互作用を扱う。
+
+3. uncertaintyReason / ratingReadiness
+   未確定理由を分類し、格付け可能性を明示する。
+
+4. adversarialReview
+   批判側・擁護側の最強主張を構造化する。
+
+5. intendedUse
+   研究・教材・投資家検証・社内レビューなどの用途を分ける。
+```
+
+これにより、本フレームワークは「何を見ないかの規律」に加えて、「何をどの境界で、どの重みで、どの用途に向けて評価するか」の骨格を持つ。

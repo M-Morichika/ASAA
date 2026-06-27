@@ -184,6 +184,20 @@ const assessmentCells = [
   },
 ];
 
+const evidenceAccessScope = {
+  mode: "public_osint",
+  description: "公開資料・公式発表・同時代報道・公開市場データに基づく外部監査。",
+  limitation: "取締役会資料、内部投資審査、採算見積もり、社内反対意見は通常確認できないため、経営陣の実際の認識は断定しない。",
+};
+
+const uncertaintyReason = ["internal_documents_unavailable", "outcome_not_mature", "evidence_conflicting"];
+
+const intendedUse = {
+  primary: "research_case_study",
+  secondary: ["strategy_training", "investor_due_diligence"],
+  notFor: ["legal_liability_determination", "investment_recommendation", "definitive_management_blame"],
+};
+
 const evidence = [
   {
     id: "TOY-E-001",
@@ -196,6 +210,14 @@ const evidence = [
     coveragePeriod: "2017-2030",
     authenticity: "高",
     interpretiveReliability: "中",
+    evidenceWeight: {
+      sourceProximity: "primary",
+      temporalFit: "direct",
+      independence: "single_source",
+      decisionMakerAccess: "clear",
+      weight: "high",
+      rationale: "トヨタ自身の2017年公式発表であり、電動車普及目標の当時資料として直接使えるため。",
+    },
   },
   {
     id: "TOY-E-002",
@@ -208,6 +230,14 @@ const evidence = [
     coveragePeriod: "2021-2030",
     authenticity: "高",
     interpretiveReliability: "中",
+    evidenceWeight: {
+      sourceProximity: "primary",
+      temporalFit: "direct",
+      independence: "single_source",
+      decisionMakerAccess: "clear",
+      weight: "high",
+      rationale: "トヨタ自身の2021年BEV戦略説明であり、当時の公式コミットメントを直接確認できるため。",
+    },
   },
   {
     id: "TOY-E-003",
@@ -220,6 +250,14 @@ const evidence = [
     coveragePeriod: "2023-2030",
     authenticity: "高",
     interpretiveReliability: "中",
+    evidenceWeight: {
+      sourceProximity: "official",
+      temporalFit: "post_hoc",
+      independence: "single_source",
+      decisionMakerAccess: "unknown",
+      weight: "low",
+      rationale: "後年の公式技術説明であり、事後対照にはなるが2021年判断の直接証拠ではないため。",
+    },
   },
   {
     id: "TOY-E-004",
@@ -232,6 +270,14 @@ const evidence = [
     coveragePeriod: "2020-2022",
     authenticity: "高",
     interpretiveReliability: "中",
+    evidenceWeight: {
+      sourceProximity: "primary",
+      temporalFit: "direct",
+      independence: "single_source",
+      decisionMakerAccess: "clear",
+      weight: "medium",
+      rationale: "公式開示アーカイブだが、複数年資料の入口であり、個別判断との接続には追加精査が必要なため。",
+    },
   },
   {
     id: "TOY-E-005",
@@ -244,6 +290,14 @@ const evidence = [
     coveragePeriod: "2021-2024",
     authenticity: "高",
     interpretiveReliability: "中",
+    evidenceWeight: {
+      sourceProximity: "primary",
+      temporalFit: "direct",
+      independence: "single_source",
+      decisionMakerAccess: "clear",
+      weight: "high",
+      rationale: "トヨタ自身の公式戦略説明であり、multi-pathway の公開説明を直接確認できるため。",
+    },
   },
   {
     id: "TOY-E-006",
@@ -256,6 +310,14 @@ const evidence = [
     coveragePeriod: "2020-2030",
     authenticity: "中",
     interpretiveReliability: "中",
+    evidenceWeight: {
+      sourceProximity: "independent_same_time",
+      temporalFit: "indirect",
+      independence: "single_source",
+      decisionMakerAccess: "likely",
+      weight: "medium",
+      rationale: "同時代の独立外部資料として市場・規制背景を補強するが、トヨタ内部判断の直接資料ではないため。",
+    },
   },
   {
     id: "TOY-E-007",
@@ -267,6 +329,14 @@ const evidence = [
     coveragePeriod: "2024-2026",
     authenticity: "中",
     interpretiveReliability: "中",
+    evidenceWeight: {
+      sourceProximity: "retrospective",
+      temporalFit: "post_hoc",
+      independence: "single_source",
+      decisionMakerAccess: "unknown",
+      weight: "low",
+      rationale: "後年販売資料・業界分析であり、戦略結果の事後対照に留めるべきため。",
+    },
   },
   {
     id: "TOY-E-008",
@@ -278,6 +348,14 @@ const evidence = [
     coveragePeriod: "2021-2024",
     authenticity: "中",
     interpretiveReliability: "中",
+    evidenceWeight: {
+      sourceProximity: "independent_same_time",
+      temporalFit: "indirect",
+      independence: "single_source",
+      decisionMakerAccess: "likely",
+      weight: "medium",
+      rationale: "中国EV競争の外部観測資料として監査論点を補強するが、経営陣の内部認識は直接示さないため。",
+    },
   },
 ];
 const claims = [
@@ -684,6 +762,44 @@ export const toyotaMultiPathwayCase = {
     "multi-pathway はBEV・SDV集中の遅れを正当化した可能性がある。",
     "後年実績だけでは2021年判断の合理性を直接証明できない。",
   ],
+  evidenceAccessScope,
+  uncertaintyReason,
+  intendedUse,
+  adversarialReview: {
+    prosecution: [
+      {
+        claimId: "toy_claim_bev_sdv_delay_risk",
+        strongestArgument: "multi-pathway は地域差対応として説明可能だが、BEV・SDV競争の速度に対する集中投資を遅らせた可能性がある。",
+        strongestEvidenceLinks: ["TOY-EL-007"],
+        caveat: "競争激化や後年技術説明は事後対照を含むため、2021年判断の不合理性を直接証明しない。",
+      },
+      {
+        claimId: "toy_claim_china_competition_underestimated",
+        strongestArgument: "中国勢・Tesla等のBEV価格競争は、地域別戦略の中でも中国市場における実行速度不足を示す可能性がある。",
+        strongestEvidenceLinks: ["TOY-EL-009"],
+        caveat: "中国市場の競争圧力を全地域に単純外挿することはできない。",
+      },
+    ],
+    defense: [
+      {
+        claimId: "toy_claim_multi_pathway_as_real_option",
+        strongestArgument: "2021年前後の地域差、電池制約、充電インフラ未成熟を踏まえると、multi-pathway は合理的なリアルオプション戦略だった可能性がある。",
+        strongestEvidenceLinks: ["TOY-EL-001"],
+        caveat: "公式説明だけでは、地域別の定量シナリオや撤退基準まで確認できない。",
+      },
+      {
+        claimId: "toy_claim_hybrid_profit_funded_transition",
+        strongestArgument: "HEVを含む既存事業の収益力は、BEV・電池・SDV投資の時間と原資を確保した可能性がある。",
+        strongestEvidenceLinks: ["TOY-EL-003"],
+        caveat: "HEV収益が移行投資を支えたことと、BEV投資速度を十分にしたことは同義ではない。",
+      },
+    ],
+    unresolvedTensions: [
+      "HEV収益による時間確保とBEV・SDV集中遅れの境界",
+      "地域差対応と中国市場での競争遅れの切り分け",
+      "公開資料で確認できる戦略説明と内部投資審査の深度の差",
+    ],
+  },
   phases,
   preWarChecklist,
   hypothesisTracking: [

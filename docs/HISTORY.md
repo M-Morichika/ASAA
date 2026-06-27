@@ -816,3 +816,181 @@ score
 ```
 
 この判断により、疑似客観性を避けつつ、将来的な説明力を確保する。
+
+## 30. H-030: 第三者評価を受けた認識論的骨格の強化
+
+実装後のAIによる第三者評価で、フレームワークの有用性は高いが、実装依存の課題があると評価された。
+
+評価された強み。
+
+```text
+- ex-ante 制約の厳守
+- 後知恵バイアスへの明示的対抗
+- 7タブ構造による時系列・反証構造の可視化
+```
+
+指摘された主な弱点。
+
+```text
+1. 「利用可能な情報」の境界問題
+2. リスク軸間の相互作用問題
+3. 「未確定」の認識論的地位
+4. 反証証拠を隠さないための運用担保
+5. 利用文脈の不明確さ
+```
+
+この評価を受け、CANON / HANDOFF / HISTORY に認識論的骨格の強化項目を追加する方針とした。
+
+---
+
+## 31. H-031: evidenceAccessScope を追加
+
+「公開情報のみを扱うのか、内部資料を含むのか」が曖昧だという批判に対応するため、`evidenceAccessScope` を追加する方針とした。
+
+採用する監査モード。
+
+```text
+public_osint:
+公開資料・同時代報道・公開市場データのみ。
+
+internal_available:
+社内資料・取締役会資料・投資審査資料を含む。
+
+retrospective_reconstruction:
+後年資料・回顧・報道を使った再構成。
+```
+
+初期 Toyota / Honda ケースは `public_osint` とする。
+
+---
+
+## 32. H-032: evidenceWeight と uncertaintyReason を追加
+
+証拠の重み付けと、未確定理由の明示が必要と判断した。
+
+`evidenceWeight` では以下を扱う。
+
+```text
+sourceProximity
+temporalFit
+independence
+decisionMakerAccess
+weight
+rationale
+```
+
+`uncertaintyReason` では以下を扱う。
+
+```text
+case_not_selected
+evidence_insufficient
+evidence_conflicting
+internal_documents_unavailable
+outcome_not_mature
+scope_boundary_unresolved
+methodology_under_revision
+```
+
+Toyota / Honda の初期値は以下。
+
+```js
+uncertaintyReason: [
+  "internal_documents_unavailable",
+  "outcome_not_mature",
+  "evidence_conflicting",
+]
+```
+
+---
+
+## 33. H-033: adversarialReview を追加
+
+「反証証拠を隠さない」を運用として担保するため、`adversarialReview` を追加する方針とした。
+
+構造。
+
+```text
+prosecution:
+監査上の懸念・批判側の最強主張。
+
+defense:
+当該戦略を擁護する最強主張。
+
+unresolvedTensions:
+現時点で決着できない論点。
+```
+
+これにより、単に evidenceLinks に反証を持つだけでなく、批判側・擁護側の最強主張を監査意見に接続できるようにする。
+
+---
+
+## 34. H-034: intendedUse を追加
+
+利用文脈が曖昧だという批判に対応するため、`intendedUse` を追加する方針とした。
+
+初期 Toyota / Honda ケースの標準値。
+
+```js
+intendedUse: {
+  primary: "research_case_study",
+  secondary: [
+    "strategy_training",
+    "investor_due_diligence",
+  ],
+  notFor: [
+    "legal_liability_determination",
+    "investment_recommendation",
+    "definitive_management_blame",
+  ],
+}
+```
+
+この指定により、本ツールは法的責任認定、投資推奨、経営者個人の断罪を目的としないことを明示する。
+
+---
+
+## 35. H-035: 次回実装優先順位を決定
+
+次回のケースデータ更新では、以下の順で追加する。
+
+```text
+1. evidenceAccessScope
+2. uncertaintyReason
+3. intendedUse
+4. evidenceWeight
+5. adversarialReview
+```
+
+理由。
+
+```text
+evidenceAccessScope と uncertaintyReason は、第三者評価が指摘した認識論的曖昧さを最も直接的に解消する。
+evidenceWeight と adversarialReview は重要だが、既存 evidenceLinks との接続設計が必要なため第2段階とする。
+intendedUse はUIへの表示がなくても、ケースメタ情報としてすぐ追加できる。
+```
+
+---
+
+## 36. H-036: 第三者評価対応フィールドをケースデータへ導入
+
+第三者評価で指摘された認識論的骨格の弱点に対応するため、Toyota / Honda 両ケースへ以下を導入した。
+
+```text
+evidenceAccessScope
+uncertaintyReason
+intendedUse
+evidenceWeight
+adversarialReview
+```
+
+導入方針。
+
+```text
+- evidenceAccessScope は public_osint とし、内部資料を見ていない外部監査であることを明示する。
+- uncertaintyReason は internal_documents_unavailable / outcome_not_mature / evidence_conflicting を初期値とする。
+- intendedUse は research_case_study を primary とし、法的責任認定・投資推奨・経営者断罪を notFor とする。
+- evidenceWeight は各 evidence に持たせ、sourceProximity / temporalFit / decisionMakerAccess / weight / rationale を明示する。
+- adversarialReview は批判側・擁護側の最強主張と unresolvedTensions を記録する。
+```
+
+この変更は UI 追加ではなく、まずケースデータの監査メタ情報を強化するものとした。

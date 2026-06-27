@@ -50,6 +50,9 @@ Automotive Strategy Accountability Audit
 - クリック可能な選択領域と静的な説明領域の見た目は分離済み
 - 証拠リンク画面の横はみ出しは修正済み
 - Toyota evidence の一部は公式URL付き正式出典へ更新済み
+- Honda evidence は 8件中7件を公式URLまたは正式アーカイブURL付き出典へ更新済み
+- Honda/GM 量販EV共同開発中止（HON-E-004）は公式URL未確認のため、報道URL精査継続として残している
+- Toyota / Honda 両ケースへ第三者評価対応フィールドを導入済み（evidenceAccessScope / uncertaintyReason / intendedUse / evidenceWeight / adversarialReview）
 ```
 
 ---
@@ -329,7 +332,7 @@ PID: 11688
 
 ### 7.2 evidence の正式出典化
 
-Toyota evidence は一部を公式URL付き正式出典へ更新済み。Honda evidence と、Toyota の後年販売資料・中国EV競争資料は正式URLや文書タイトルの精査が未完了。
+Toyota evidence は一部を公式URL付き正式出典へ更新済み。Honda evidence は 8件中7件を公式URLまたは正式アーカイブURL付きに更新済み。Honda/GM 量販EV共同開発中止（HON-E-004）と、Toyota の後年販売資料・中国EV競争資料は正式URLや文書タイトルの精査が未完了。
 
 次にやる場合は、公式資料を優先する。
 
@@ -344,7 +347,7 @@ Honda:
 - 2021年 EV/FCEV 2040年100%目標発表
 - 2021〜2022年 電動化戦略説明会資料
 - 2022年 Honda/GM 量販価格帯EV共同開発発表
-- 2023年 Honda/GM 量販EV共同開発中止に関する発表・報道
+- 2023年 Honda/GM 量販EV共同開発中止に関する発表・報道（未完了: 公式URL未確認、報道URL精査継続）
 - 統合報告書 / 有価証券報告書 / 決算説明資料
 ```
 
@@ -410,3 +413,91 @@ EV需要・提携依存・実行能力の過大評価仮説の双方が成立す
 ```
 
 このプロジェクトの目的は、勝敗判定ではなく、当時の意思決定プロセスとリスク評価の監査である。
+
+## 10. 第三者評価への対応：実装済みの骨格
+
+第三者評価により、以下5点が改善課題として整理された。
+
+```text
+1. 「当時利用可能だった情報」の境界が曖昧
+2. リスク軸間の相互作用が弱い
+3. 「未確定」の意味が技術的未確定なのか認識論的未確定なのか曖昧
+4. 反証証拠を隠さないための運用担保が不足
+5. 想定利用者・用途が未定義
+```
+
+`docs/CANON.md` には以下の章として落とし込み済み。
+
+```text
+30. evidenceAccessScope：利用可能情報の境界
+31. evidenceWeight：証拠の重み付け
+32. uncertaintyReason：未確定理由の分類
+33. adversarialReview：構造的反論レビュー
+34. intendedUse：利用文脈の明示
+35. 第三者評価への対応方針
+```
+
+---
+
+## 11. 導入済みの第三者評価対応フィールド
+
+Toyota / Honda 両ケースへ以下を追加済み。
+
+```text
+優先1:
+evidenceAccessScope
+
+優先2:
+uncertaintyReason
+
+優先3:
+intendedUse
+
+優先4:
+evidenceWeight
+
+優先5:
+adversarialReview
+```
+
+最初に Toyota / Honda 両ケースへ入れる標準値。
+
+```js
+evidenceAccessScope: {
+  mode: "public_osint",
+  description: "公開資料・公式発表・同時代報道・公開市場データに基づく外部監査。",
+  limitation: "取締役会資料、内部投資審査、採算見積もり、社内反対意見は通常確認できないため、経営陣の実際の認識は断定しない。",
+}
+
+uncertaintyReason: [
+  "internal_documents_unavailable",
+  "outcome_not_mature",
+  "evidence_conflicting",
+]
+
+intendedUse: {
+  primary: "research_case_study",
+  secondary: [
+    "strategy_training",
+    "investor_due_diligence",
+  ],
+  notFor: [
+    "legal_liability_determination",
+    "investment_recommendation",
+    "definitive_management_blame",
+  ],
+}
+```
+
+---
+
+## 12. 今後のブラッシュアップ時の注意
+
+```text
+- evidenceAccessScope は、公開資料監査なのか、内部資料監査なのかを区別するための必須メタ情報とする。
+- 初期 Toyota / Honda は public_osint 監査として扱う。
+- uncertaintyReason により、rating: "未確定" の理由を明示する。
+- evidenceWeight は E0〜E4 とは別物として扱う。
+- adversarialReview は、反証証拠を隠さないための運用担保として追加する。
+- intendedUse により、法的責任認定・投資推奨・経営者断罪ではないことを明示する。
+```
