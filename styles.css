@@ -427,6 +427,106 @@ select {
   color: var(--muted);
 }
 
+.compact-list {
+  margin: 0;
+  line-height: 1.7;
+}
+
+.audit-disclosure {
+  margin-top: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel-strong);
+  overflow: hidden;
+}
+
+.audit-disclosure:first-of-type {
+  margin-top: 0;
+}
+
+.audit-disclosure > summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-height: 48px;
+  padding: 12px 14px;
+  cursor: pointer;
+  list-style: none;
+  font-weight: 700;
+}
+
+.audit-disclosure > summary::-webkit-details-marker {
+  display: none;
+}
+
+.audit-disclosure > summary::before {
+  content: "▸";
+  color: var(--muted);
+}
+
+.audit-disclosure[open] > summary::before {
+  content: "▾";
+}
+
+.audit-disclosure > summary:hover,
+.audit-disclosure > summary:focus-visible {
+  background: #eef3f2;
+  outline: none;
+}
+
+.summary-meta {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 600;
+  text-align: right;
+}
+
+.audit-disclosure-body {
+  padding: 0 14px 14px;
+}
+
+.compact-disclosure {
+  margin: 12px 0 4px;
+  background: #f8faf9;
+}
+
+.review-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.review-column h4,
+.review-tensions h4 {
+  margin: 4px 0 10px;
+  font-size: 15px;
+}
+
+.review-item {
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--panel);
+}
+
+.review-item + .review-item {
+  margin-top: 10px;
+}
+
+.review-item p {
+  margin: 0 0 8px;
+}
+
+.review-item p:last-child {
+  margin-bottom: 0;
+}
+
+.review-tensions {
+  margin-top: 14px;
+}
+
 /* UI-8: 疎マトリクスの未評価マスは控えめなダッシュで示す（「未定義」氾濫の解消） */
 .cell-undefined {
   color: var(--muted);

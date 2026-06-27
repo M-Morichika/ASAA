@@ -235,7 +235,7 @@ export function lintCaseMethodology(caseData) {
   const findings = [];
   const links = Array.isArray(caseData.evidenceLinks) ? caseData.evidenceLinks : [];
   const claims = Array.isArray(caseData.claims) ? caseData.claims : [];
-  const validTimeFits = new Set(["直接", "間接"]);
+  const validTimeFits = new Set(["直接", "間接", "事後"]);
   const requiredTextFields = ["canSay", "cannotSay", "knownByDecisionMakers", "knownByDecisionMakersBasis"];
 
   links.forEach((link) => {
@@ -253,6 +253,9 @@ export function lintCaseMethodology(caseData) {
     }
     if (link.timeFit === "直接" && link.availableAtDecisionTime !== true) {
       findings.push({ type: "direct_evidence_not_available_at_decision_time", id: link.id, severity: "重大" });
+    }
+    if (link.timeFit === "事後" && link.availableAtDecisionTime !== false) {
+      findings.push({ type: "post_hoc_evidence_available_at_decision_time", id: link.id, severity: "重大" });
     }
     if (!link.claimId || !link.assessmentCellId) {
       findings.push({ type: "link_without_claim_or_cell", id: link.id, relationship: link.relationship, severity: "注意" });

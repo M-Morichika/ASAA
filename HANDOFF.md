@@ -45,7 +45,7 @@ Automotive Strategy Accountability Audit
 - 既定ケースは toyota-multi-pathway-2021
 - counterpartCaseId は双方向リンク済み
 - rating は両ケースとも 未確定
-- cache-busting は 20260627-auto-ev-shift-r8 に統一済み
+- cache-busting は 20260627-auto-ev-shift-r9 に統一済み
 - UI文言は企業戦略監査向けに自然化済み
 - クリック可能な選択領域と静的な説明領域の見た目は分離済み
 - 証拠リンク画面の横はみ出しは修正済み
@@ -53,6 +53,7 @@ Automotive Strategy Accountability Audit
 - Honda evidence は 8件すべてに公式URL・正式アーカイブURL・信頼できる報道URLのいずれかを追加済み
 - Honda/GM 量販EV共同開発中止（HON-E-004）は公式発表URL未確認のため、Reuters 報道URLを信頼できる報道出典として採用済み
 - Toyota / Honda 両ケースへ第三者評価対応フィールドを導入済み（evidenceAccessScope / uncertaintyReason / intendedUse / evidenceWeight / adversarialReview）
+- 第三者評価対応フィールドは UI に折りたたみ表示済み（戦略概要: 監査境界・反対側レビュー、証拠リンク: 証拠重み）
 ```
 
 ---
@@ -213,8 +214,8 @@ static-section = クリックできない集計・説明領域
 - ratingBasis の直接根拠
 ```
 
-実装上、後年資料の `evidenceLink` は `target` に `事後対照` を含め、`availableAtDecisionTime: false` として扱っている。  
-既存 lint は `timeFit: "事後"` を許容していないため、後年資料リンクの `timeFit` は現状 `間接` としている。
+実装上、後年資料の `evidenceLink` は `target` に `事後対照` を含め、`timeFit: "事後"` かつ `availableAtDecisionTime: false` として扱っている。
+`lintCaseMethodology` も `timeFit: "事後"` を正式に許容し、事後資料が判断時点利用可能扱いになっていないかを検査する。
 
 ### 4.4 内部資料不足の扱い
 
@@ -272,7 +273,7 @@ node tools/check-cache-busting.mjs
 結果。
 
 ```text
-cache-busting ok: 20260627-auto-ev-shift-r8 (8 version markers checked)
+cache-busting ok: 20260627-auto-ev-shift-r9 (8 version markers checked)
 ```
 
 ### 5.3 Browser smoke test
@@ -315,10 +316,8 @@ PID: 11688
 優先順。
 
 ```text
-1. Honda の evidence を実URL・正式出典付きに精査する
-2. Toyota evidence の残り（後年販売資料・中国EV競争資料）を精査する
-3. 後年資料の timeFit 設計を見直す
-4. 必要なら browser smoke test を再実行する
+1. 必要なら browser smoke test を再実行する
+2. 変更内容を commit / push する
 ```
 
 ---
@@ -332,7 +331,7 @@ PID: 11688
 
 ### 7.2 evidence の正式出典化
 
-Toyota evidence は一部を公式URL付き正式出典へ更新済み。Honda evidence は 8件すべてに公式URL・正式アーカイブURL・信頼できる報道URLのいずれかを追加済み。Honda/GM 量販EV共同開発中止（HON-E-004）は公式発表URL未確認のため Reuters 報道URLを採用している。Toyota の後年販売資料・中国EV競争資料は正式URLや文書タイトルの精査が未完了。
+Toyota evidence は 8件すべてに公式URL・正式アーカイブURL・信頼できる外部資料URLのいずれかを追加済み。Honda evidence も 8件すべてに公式URL・正式アーカイブURL・信頼できる報道URLのいずれかを追加済み。Honda/GM 量販EV共同開発中止（HON-E-004）は公式発表URL未確認のため Reuters 報道URLを採用している。
 
 次にやる場合は、公式資料を優先する。
 
@@ -342,6 +341,8 @@ Toyota:
 - 2021年12月 Battery EV Strategies briefing
 - multi-pathway approach に関する公式説明
 - 統合報告書 / 有価証券報告書 / 決算説明資料
+- 2024年 Toyota Sales, Production, and Export Results
+- IEA Global EV Outlook 2024 の中国EV市場・価格競争分析
 
 Honda:
 - 2021年 EV/FCEV 2040年100%目標発表
@@ -351,25 +352,17 @@ Honda:
 - 統合報告書 / 有価証券報告書 / 決算説明資料
 ```
 
-公式資料が足りない場合のみ、同時代外部資料や後年分析を補助資料として使う。
+公式資料が足りない場合のみ、同時代外部資料や後年分析を補助資料として使う。現時点では Toyota / Honda evidence のURL付与は一巡済み。
 
 ### 7.3 timeFit 設計
 
-`docs/CANON.md` では `timeFit: "事後"` を想定している。  
-一方、現在の `lintCaseMethodology` は `直接` / `間接` のみを valid としている。
-
-次に検討する選択肢。
+`docs/CANON.md` で想定していた `timeFit: "事後"` を実装へ反映済み。
 
 ```text
-案A:
-lintCaseMethodology の validTimeFits に "事後" を追加する。
-
-案B:
-後年資料は引き続き timeFit: "間接" とし、target と availableAtDecisionTime で事後対照を表現する。
-
-推奨:
-CANON との整合を優先するなら案A。
-ただし変更後は node verify.js とブラウザ確認を必ず実施する。
+- lintCaseMethodology の validTimeFits に "事後" を追加済み
+- timeFit: "直接" は availableAtDecisionTime: true を必須化
+- timeFit: "事後" は availableAtDecisionTime: false を必須化
+- 後年資料リンクは timeFit: "事後" として事後対照であることを明示
 ```
 
 ### 7.4 cache-busting checker
@@ -377,10 +370,10 @@ CANON との整合を優先するなら案A。
 現在の確認結果は以下。
 
 ```text
-cache-busting ok: 20260627-auto-ev-shift-r8 (8 version markers checked)
+cache-busting ok: 20260627-auto-ev-shift-r9 (8 version markers checked)
 ```
 
-`tools/check-cache-busting.mjs` は `index.html` の `styles.css?v=20260627-auto-ev-shift-r8` も確認対象に含めるよう更新済み。
+`tools/check-cache-busting.mjs` は `index.html` の `styles.css?v=20260627-auto-ev-shift-r9` も確認対象に含めるよう更新済み。
 出力件数は JavaScript import だけではなく stylesheet を含むため、`version markers checked` として数える。
 
 ---

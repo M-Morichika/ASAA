@@ -11,7 +11,7 @@ import {
   resolveStatus,
   statusClass,
   statusOrder,
-} from "../data/auditSchema.js?v=20260627-auto-ev-shift-r8";
+} from "../data/auditSchema.js?v=20260627-auto-ev-shift-r9";
 
 export function createRenderers(auditData, state) {
 function getAssumption(id) {
@@ -115,6 +115,95 @@ function renderParagraphs(text) {
     .join("");
 }
 
+function renderStringList(items) {
+  return Array.isArray(items) && items.length
+    ? `<ul class="clean compact-list">${items.map((item) => `<li>${item}</li>`).join("")}</ul>`
+    : `<p class="muted">未設定</p>`;
+}
+
+function renderAuditBoundary() {
+  const scope = auditData.evidenceAccessScope;
+  const intendedUse = auditData.intendedUse;
+  if (!scope && !auditData.uncertaintyReason?.length && !intendedUse) return "";
+  return `
+    <details class="audit-disclosure">
+      <summary><span>監査境界</span><span class="summary-meta">公開情報・不確実性・利用目的</span></summary>
+      <div class="audit-disclosure-body">
+        <dl class="metric-list">
+          <div class="metric-row"><dt>情報範囲</dt><dd>${scope?.mode || "未設定"}</dd></div>
+          <div class="metric-row"><dt>説明</dt><dd>${scope?.description || "未設定"}</dd></div>
+          <div class="metric-row"><dt>限界</dt><dd>${scope?.limitation || "未設定"}</dd></div>
+          <div class="metric-row"><dt>不確実性</dt><dd>${formatValue(auditData.uncertaintyReason)}</dd></div>
+          <div class="metric-row"><dt>主用途</dt><dd>${intendedUse?.primary || "未設定"}</dd></div>
+          <div class="metric-row"><dt>副用途</dt><dd>${formatValue(intendedUse?.secondary)}</dd></div>
+          <div class="metric-row"><dt>対象外</dt><dd>${formatValue(intendedUse?.notFor)}</dd></div>
+        </dl>
+      </div>
+    </details>
+  `;
+}
+
+function renderReviewSide(title, items) {
+  if (!Array.isArray(items) || items.length === 0) return "";
+  return `
+    <div class="review-column">
+      <h4>${title}</h4>
+      ${items
+        .map(
+          (item) => `
+            <article class="review-item">
+              <p><strong>${item.claimId}</strong></p>
+              <p>${item.strongestArgument}</p>
+              <p class="muted">根拠リンク: ${formatValue(item.strongestEvidenceLinks)}</p>
+              <p class="muted">留保: ${item.caveat}</p>
+            </article>
+          `,
+        )
+        .join("")}
+    </div>
+  `;
+}
+
+function renderAdversarialReview() {
+  const review = auditData.adversarialReview;
+  if (!review) return "";
+  return `
+    <details class="audit-disclosure">
+      <summary><span>反対側レビュー</span><span class="summary-meta">批判側・擁護側の最強主張</span></summary>
+      <div class="audit-disclosure-body">
+        <div class="review-grid">
+          ${renderReviewSide("批判側", review.prosecution)}
+          ${renderReviewSide("擁護側", review.defense)}
+        </div>
+        <div class="review-tensions">
+          <h4>未決着論点</h4>
+          ${renderStringList(review.unresolvedTensions)}
+        </div>
+      </div>
+    </details>
+  `;
+}
+
+function renderEvidenceWeight(evidence) {
+  const weight = evidence?.evidenceWeight;
+  if (!weight) return "";
+  return `
+    <details class="audit-disclosure compact-disclosure">
+      <summary><span>証拠重み</span><span class="summary-meta">${weight.weight || "未設定"}</span></summary>
+      <div class="audit-disclosure-body">
+        <dl class="metric-list">
+          <div class="metric-row"><dt>資料近接性</dt><dd>${weight.sourceProximity || "未設定"}</dd></div>
+          <div class="metric-row"><dt>時点適合</dt><dd>${weight.temporalFit || "未設定"}</dd></div>
+          <div class="metric-row"><dt>独立性</dt><dd>${weight.independence || "未設定"}</dd></div>
+          <div class="metric-row"><dt>意思決定者アクセス</dt><dd>${weight.decisionMakerAccess || "未設定"}</dd></div>
+          <div class="metric-row"><dt>重み</dt><dd>${weight.weight || "未設定"}</dd></div>
+          <div class="metric-row"><dt>理由</dt><dd>${weight.rationale || "未設定"}</dd></div>
+        </dl>
+      </div>
+    </details>
+  `;
+}
+
 function renderOverview() {
   const snapshot = auditData.warCase;
   return `
@@ -157,6 +246,12 @@ function renderOverview() {
         ${auditData.warCase.ratingNote ? `<p class="muted">${auditData.warCase.ratingNote}</p>` : ""}
       </section>
     </div>
+
+    <section class="section">
+      <h3>第三者評価対応</h3>
+      ${renderAuditBoundary()}
+      ${renderAdversarialReview()}
+    </section>
   `;
 }
 
@@ -468,6 +563,7 @@ function renderEvidence() {
               <div class="metric-row"><dt>真正性</dt><dd>${selectedEvidence?.authenticity || "未確認"}</dd></div>
               <div class="metric-row"><dt>解釈信頼性</dt><dd>${selectedEvidence?.interpretiveReliability || "未確認"}</dd></div>
             </dl>
+            ${renderEvidenceWeight(selectedEvidence)}
             <p class="metric-group-label">リンク</p>
             <dl class="metric-list">
               <div class="metric-row"><dt>関係</dt><dd>${badge(selectedLink.relationship)}</dd></div>

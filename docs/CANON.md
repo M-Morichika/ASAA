@@ -590,10 +590,10 @@ TOY-E-006:
 IEA / BloombergNEF / ACEA 等の当時または同時代のEV市場・電池・規制データ
 
 TOY-E-007:
-2024〜2026年の販売実績・HEV/BEV構成・地域別販売資料
+Toyota, 2024年 Sales, Production, and Export Results
 
 TOY-E-008:
-中国EV競争・Tesla/BYD等に関する同時代報道・業界分析
+IEA Global EV Outlook 2024, 中国EV市場・価格競争・輸出増に関する分析
 ```
 
 ### 14.2 Honda evidence 候補
