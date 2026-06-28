@@ -5,9 +5,9 @@ import {
   validateCaseReferences,
   validateCaseRegistry,
   viewMeta,
-} from "./data/auditSchema.js?v=20260627-auto-ev-shift-r11";
-import { cases } from "./data/cases/index.js?v=20260627-auto-ev-shift-r11";
-import { createRenderers } from "./ui/renderers.js?v=20260627-auto-ev-shift-r11";
+} from "./data/auditSchema.js?v=20260627-auto-ev-shift-r12";
+import { cases } from "./data/cases/index.js?v=20260627-auto-ev-shift-r12";
+import { createRenderers } from "./ui/renderers.js?v=20260627-auto-ev-shift-r12";
 
 const DEFAULT_CASE_ID = "toyota-multi-pathway-2021";
 

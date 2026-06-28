@@ -1605,7 +1605,7 @@ HANDOFF の方針に従い、3社目ケースとして `byd-vertical-integration
 ```text
 - data/cases/byd-vertical-integration-2021.js を追加
 - data/cases/index.js に BYD を登録
-- cache-busting を 20260627-auto-ev-shift-r11 に更新
+- cache-busting を 20260627-auto-ev-shift-r12 に更新
 - BYD の phases / assessmentCells / claims / evidence / evidenceLinks / preWarChecklist を初期 skeleton として追加
 - BYD は counterpartCaseId を未指定にし、Toyota / Honda の双方向 counterpart 関係を維持
 - assessmentCoverage に out_of_scope / in_scope_unassessed を入れ、セルなしとE0を混同しないようにした
@@ -1623,7 +1623,7 @@ node tools\check-cache-busting.mjs
 
 ```text
 ALL CHECKS PASSED!
-cache-busting ok: 20260627-auto-ev-shift-r11 (9 version markers checked)
+cache-busting ok: 20260627-auto-ev-shift-r12 (9 version markers checked)
 ```
 
 初回 lint では `byd_claim_vertical_integration_as_advantage` が支持のみの片側 claim として検出された。対応として、価格競争・過剰能力リスクを同 claim の反証リンク `BYD-EL-010` として追加した。
@@ -1647,4 +1647,32 @@ http://127.0.0.1:8123/index.html
 - counterpart nav は BYD では非表示
 - undefined 表示なし
 - console warning/error なし
+```
+
+---
+
+## 63. H-063: BYD 証拠URLと coverage を精査
+
+BYD ケース追加後の内容精査として、証拠URLの到達性と claim / evidenceLink の反証バランスを確認した。
+
+反映内容。
+
+```text
+- BYD-E-001 の HKEX URL を BYD Annual Report 2021 の正しいPDFへ修正
+- BYD-E-002 を到達可能な BYD 公式 Blade Battery ページへ修正
+- BYD-E-003 は現行公式URLが 403 のため、正式アーカイブURLへ切り替え
+- BYD-E-005 は到達不能な公式ニュースURLではなく、燃油車生産停止を確認できる BYD Annual Report 2022 の HKEX PDFへ切り替え
+- BYD-E-006 の HKEX URL を BYD Annual Report 2023 の正しいPDFへ修正
+- assessmentCoverage を補強し、セルなし / 対象外 / in_scope_unassessed の区別を明示
+- cache-busting を 20260627-auto-ev-shift-r12 に更新
+```
+
+確認結果。
+
+```text
+claim / evidenceLink は4 claimsすべて支持・反証の両側リンクあり。
+BYD Annual Report 2021 / 2022 / 2023 は HKEX PDF本文で BYD 資料であることを確認済み。
+Blade Battery 公式ページと IEA Global EV Outlook 2024 は到達確認済み。
+e-Platform 3.0 は現行公式URLが403のため、Internet Archive の保存URLを採用。
+ブラウザ smoke test では、BYD選択、6タブ表示、証拠リンク表示、投資前チェックの未評価ギャップ表示、undefined 表示なし、console warning/error なしを確認済み。
 ```

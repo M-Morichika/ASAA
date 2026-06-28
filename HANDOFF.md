@@ -35,7 +35,7 @@ docs/archive/HANDOFF_full_before_slim_20260627.md
 - counterpartCaseId は Toyota / Honda 間で双方向リンク済み。BYD は初期 skeleton では対照ケース未指定
 - rating は3ケースとも 未確定
 - ratingReadiness は3ケースとも 未到達
-- cache-busting は 20260627-auto-ev-shift-r11 に統一済み
+- cache-busting は 20260627-auto-ev-shift-r12 に統一済み
 - Honda evidence 8件に公式URL・正式アーカイブURL・信頼できる報道URLのいずれかを追加済み
 - Toyota evidence も公式URL・正式アーカイブURL・信頼できる外部資料URLのいずれかを追加済み
 - timeFit: "事後" を正式許容済み
@@ -43,6 +43,9 @@ docs/archive/HANDOFF_full_before_slim_20260627.md
 - 第三者評価対応フィールドはUIに折りたたみ表示済み
 - BYD 垂直統合・EV集中ケースを初期 skeleton として追加済み
 - BYD は claims / evidence / evidenceLinks / assessmentCells / assessmentCoverage を最小構成で追加済み
+- BYD evidence のURL到達性を一巡し、HKEX PDF・BYD公式ページ・正式アーカイブURLへ修正済み
+- BYD の4 claims はすべて支持・反証の両側 evidenceLink を持つ状態まで精査済み
+- BYD assessmentCoverage は out_of_scope / in_scope_unassessed の説明を補強済み
 ```
 
 ---
@@ -70,10 +73,10 @@ node tools/check-cache-busting.mjs
 結果。
 
 ```text
-cache-busting ok: 20260627-auto-ev-shift-r11 (9 version markers checked)
+cache-busting ok: 20260627-auto-ev-shift-r12 (9 version markers checked)
 ```
 
-ブラウザ smoke test では、Toyota / Honda / BYD の3ケース表示、BYD選択、6タブ描画、undefined 表示なし、console warning/error なしを確認済み。
+ブラウザ smoke test では、Toyota / Honda / BYD の3ケース表示、BYD選択、6タブ描画、証拠リンク表示、投資前チェックの未評価ギャップ表示、undefined 表示なし、console warning/error なしを確認済み。
 
 ---
 
