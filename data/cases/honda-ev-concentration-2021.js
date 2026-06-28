@@ -359,6 +359,26 @@ const evidence = [
       rationale: "同時代の独立外部資料としてEV市場・規制背景を補強するが、Honda内部判断の直接資料ではないため。",
     },
   },
+  {
+    id: "HON-E-009",
+    title: "IEA: Global EV Outlook 2026 - Electric vehicle batteries",
+    source: "International Energy Agency, Global EV Outlook 2026",
+    sourceUrl: "https://www.iea.org/reports/global-ev-outlook-2026/electric-vehicle-batteries",
+    type: "事後資料",
+    collectionState: "正式URL確認済み",
+    publishedDate: "2026",
+    coveragePeriod: "2024-2030",
+    authenticity: "中",
+    interpretiveReliability: "中",
+    evidenceWeight: {
+      sourceProximity: "independent_retrospective",
+      temporalFit: "post_hoc",
+      independence: "single_source",
+      decisionMakerAccess: "unknown",
+      weight: "low",
+      rationale: "IEAの後年公開分析であり、電池価格低下・LFP普及・地域差を事後対照として使えるが、2021年判断時点の直接証拠ではないため。",
+    },
+  },
 ];
 
 const claims = [
@@ -643,6 +663,23 @@ const evidenceLinks = [
     canSay: "公式目標は公開説明責任の一部であり、完全に資料がないわけではない。",
     cannotSay: "公式目標だけで内部検討の深度や採算検証の十分性は判断できない。",
   },
+  {
+    ...linkBase,
+    id: "HON-EL-015",
+    evidenceId: "HON-E-009",
+    claimId: "hon_claim_sdv_battery_execution_gap",
+    assessmentCellId: "hon_cell_battery_cost_supply",
+    claimLabel: "電池・SDV・量販EV実行能力の説明不足",
+    target: "事後対照: 電池価格低下とLFP普及",
+    relationship: "支持",
+    timeFit: "事後",
+    availableAtDecisionTime: false,
+    availableToAnalysts: true,
+    knownByDecisionMakers: "不明",
+    knownByDecisionMakersBasis: "2026年公開の後年資料であり、2021年時点の内部認識を直接示さない。",
+    canSay: "後年の電池価格低下、LFP普及、地域別価格差は、量販EVの採算・調達・価格競争力を再評価する材料になる。",
+    cannotSay: "2021年時点でHondaがこの後年データを知っていた、またはEV集中判断が不合理だったとは断定できない。",
+  },
 ];
 
 const preWarChecklist = [
@@ -682,10 +719,10 @@ const preWarChecklist = [
     evaluationDifficulty: "高",
     actuallyEvaluated: "限定的",
     auditQuestion: "電池コスト、調達、全固体電池、量販EV採算をどこまで評価したか。",
-    evidenceBasis: "電動化方針はあるが、量販EV採算と電池コストの下方シナリオは公開上限定的。",
+    evidenceBasis: "電動化方針はあるが、量販EV採算と電池コストの下方シナリオは公開上限定的。後年のIEA電池資料は事後対照として扱う。",
     linkedCells: ["hon_cell_battery_cost_supply"],
     linkedAssumptions: ["hon_assumption_battery_sdv_execution"],
-    linkedEvidenceLinks: ["HON-EL-009", "HON-EL-010"],
+    linkedEvidenceLinks: ["HON-EL-009", "HON-EL-010", "HON-EL-015"],
     counterPoint: "内部で詳細検討されていなかったとは断定できない。",
   },
   {

@@ -359,6 +359,26 @@ const evidence = [
       rationale: "中国EV競争の外部観測資料として監査論点を補強するが、経営陣の内部認識は直接示さないため。",
     },
   },
+  {
+    id: "TOY-E-009",
+    title: "IEA: Global EV Outlook 2026 - Electric vehicle batteries",
+    source: "International Energy Agency, Global EV Outlook 2026",
+    sourceUrl: "https://www.iea.org/reports/global-ev-outlook-2026/electric-vehicle-batteries",
+    type: "事後資料",
+    collectionState: "正式URL確認済み",
+    publishedDate: "2026",
+    coveragePeriod: "2024-2030",
+    authenticity: "中",
+    interpretiveReliability: "中",
+    evidenceWeight: {
+      sourceProximity: "independent_retrospective",
+      temporalFit: "post_hoc",
+      independence: "single_source",
+      decisionMakerAccess: "unknown",
+      weight: "low",
+      rationale: "IEAの後年公開分析であり、電池価格低下・LFP普及・地域差を事後対照として使えるが、2021年判断時点の直接証拠ではないため。",
+    },
+  },
 ];
 const claims = [
   {
@@ -642,6 +662,23 @@ const evidenceLinks = [
     canSay: "公開資料から一定の戦略説明は確認でき、完全に監査不能ではない。",
     cannotSay: "内部資料なしに取締役会の検討深度や成否を断定することはできない。",
   },
+  {
+    ...linkBase,
+    id: "TOY-EL-015",
+    evidenceId: "TOY-E-009",
+    claimId: "toy_claim_solid_state_expectation_risk",
+    assessmentCellId: "toy_cell_battery_cost_supply",
+    claimLabel: "次世代電池期待リスク",
+    target: "事後対照: 電池価格低下とLFP普及",
+    relationship: "支持",
+    timeFit: "事後",
+    availableAtDecisionTime: false,
+    availableToAnalysts: true,
+    knownByDecisionMakers: "不明",
+    knownByDecisionMakersBasis: "2026年公開の後年資料であり、2021年時点の内部認識を直接示さない。",
+    canSay: "後年の電池価格低下、LFP普及、地域別価格差は、量産BEVの採算・競争速度を再評価する材料になる。",
+    cannotSay: "2021年時点でトヨタがこの後年データを知っていた、または電池戦略を誤ったとは断定できない。",
+  },
 ];
 
 const preWarChecklist = [
@@ -681,10 +718,10 @@ const preWarChecklist = [
     evaluationDifficulty: "高",
     actuallyEvaluated: "限定的",
     auditQuestion: "電池コスト、調達、量産採算、全固体電池期待をどこまで評価したか。",
-    evidenceBasis: "電池・BEV説明はあるが、量産採算の下方シナリオは公開資料上限定的。",
+    evidenceBasis: "電池・BEV説明はあるが、量産採算の下方シナリオは公開資料上限定的。後年のIEA電池資料は事後対照として扱う。",
     linkedCells: ["toy_cell_battery_cost_supply"],
     linkedAssumptions: ["toy_assumption_battery_cost_constraint"],
-    linkedEvidenceLinks: ["TOY-EL-004", "TOY-EL-011", "TOY-EL-012"],
+    linkedEvidenceLinks: ["TOY-EL-004", "TOY-EL-011", "TOY-EL-012", "TOY-EL-015"],
     counterPoint: "内部のコスト検討がなかったとは断定できない。",
   },
   {

@@ -11,7 +11,7 @@ import {
   resolveStatus,
   statusClass,
   statusOrder,
-} from "../data/auditSchema.js?v=20260627-auto-ev-shift-r9";
+} from "../data/auditSchema.js?v=20260627-auto-ev-shift-r11";
 
 export function createRenderers(auditData, state) {
 function getAssumption(id) {
@@ -825,18 +825,3 @@ function renderPreWar() {
     opinion: renderOpinion,
   };
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

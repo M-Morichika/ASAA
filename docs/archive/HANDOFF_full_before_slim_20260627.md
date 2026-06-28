@@ -1,0 +1,718 @@
+# HANDOFF.md
+
+# Automotive Strategy Accountability Audit — Handoff
+
+最終更新: 2026-06-27
+
+---
+
+## 0. このファイルの目的
+
+このファイルは、**Automotive Strategy Accountability Audit** の再開に必要な現在状態、検証結果、次作業だけを記録する。
+
+詳細な設計原則は `docs/CANON.md` を参照する。  
+作業履歴・由来・決定経緯は `docs/HISTORY.md` を参照する。
+
+---
+
+## 1. 現在のプロジェクト状態
+
+### 1.1 プロジェクト名
+
+```text
+Automotive Strategy Accountability Audit
+```
+
+### 1.2 目的
+
+自動車産業のEVシフトを、後知恵ではなく、当時利用可能だった情報に基づく **ex-ante 経営判断監査**として評価する。
+
+問うべきことは以下。
+
+```text
+2021年前後の不確実性下で、各社の経営陣・取締役会は、
+市場需要、規制、電池、SDV、資本配分、提携依存、撤退基準を
+どこまで合理的に評価していたか。
+```
+
+### 1.3 現在の実装状態
+
+初期実装は完了済み。
+
+```text
+- Toyota / Honda の2ケースのみ登録済み
+- 旧 War Accountability Audit の戦争ケース import は削除済み
+- 既定ケースは toyota-multi-pathway-2021
+- counterpartCaseId は双方向リンク済み
+- rating は両ケースとも 未確定
+- cache-busting は 20260627-auto-ev-shift-r9 に統一済み
+- UI文言は企業戦略監査向けに自然化済み
+- クリック可能な選択領域と静的な説明領域の見た目は分離済み
+- 証拠リンク画面の横はみ出しは修正済み
+- Toyota evidence の一部は公式URL付き正式出典へ更新済み
+- Honda evidence は 8件すべてに公式URL・正式アーカイブURL・信頼できる報道URLのいずれかを追加済み
+- Honda/GM 量販EV共同開発中止（HON-E-004）は公式発表URL未確認のため、Reuters 報道URLを信頼できる報道出典として採用済み
+- Toyota / Honda 両ケースへ第三者評価対応フィールドを導入済み（evidenceAccessScope / uncertaintyReason / intendedUse / evidenceWeight / adversarialReview）
+- 第三者評価対応フィールドは UI に折りたたみ表示済み（戦略概要: 監査境界・反対側レビュー、証拠リンク: 証拠重み）
+```
+
+---
+
+## 2. 現在のファイル構成
+
+```text
+index.html
+app.js
+styles.css
+verify.js
+
+_tools/check-cache-busting.mjs は存在しない。実体は tools/check-cache-busting.mjs。
+
+data/
+  auditSchema.js
+  cases/
+    index.js
+    toyota-multi-pathway-2021.js
+    honda-ev-concentration-2021.js
+
+ui/
+  renderers.js
+
+docs/
+  CANON.md
+  HISTORY.md
+
+HANDOFF.md
+```
+
+実際の `rg --files` 確認済みファイルは以下。
+
+```text
+verify.js
+ui/renderers.js
+tools/check-cache-busting.mjs
+styles.css
+index.html
+HANDOFF.md
+docs/HISTORY.md
+docs/CANON.md
+app.js
+data/auditSchema.js
+data/cases/toyota-multi-pathway-2021.js
+data/cases/index.js
+data/cases/honda-ev-concentration-2021.js
+```
+
+---
+
+## 3. 登録ケース
+
+### 3.1 Toyota
+
+```text
+id: toyota-multi-pathway-2021
+conflict: 自動車産業EVシフト（2020年代）
+name: 自動車産業EVシフト 2020年代：トヨタ multi-pathway 戦略
+auditedActor: トヨタ自動車 経営陣・取締役会
+counterpartCaseId: honda-ev-concentration-2021
+rating: 未確定
+uncertainty: 中
+```
+
+実装済み要素。
+
+```text
+phases: 4
+preWarChecklist: 6
+claims: 7
+evidence: 8
+assessmentCells: 8
+evidenceLinks: 14
+ratingBasis: 5
+ratingReadiness: 未到達
+```
+
+### 3.2 Honda
+
+```text
+id: honda-ev-concentration-2021
+conflict: 自動車産業EVシフト（2020年代）
+name: 自動車産業EVシフト 2020年代：Honda EV集中戦略
+auditedActor: 本田技研工業 経営陣・取締役会
+counterpartCaseId: toyota-multi-pathway-2021
+rating: 未確定
+uncertainty: 中〜高
+```
+
+実装済み要素。
+
+```text
+phases: 4
+preWarChecklist: 6
+claims: 7
+evidence: 8
+assessmentCells: 8
+evidenceLinks: 14
+ratingBasis: 5
+ratingReadiness: 未到達
+```
+
+---
+
+## 4. 現在の設計方針
+
+### 4.1 UIの読み替え
+
+既存データ名・UI名は一部そのまま残している。
+
+```text
+Pre-War = 戦略表明前・大規模投資前の評価形跡チェック
+warCase = strategyCase 相当
+opponentActor = counterpart strategy actor
+primaryResponsibility = strategy accountability responsibility
+```
+
+`data/auditSchema.js` と `ui/renderers.js` の表示文言は企業戦略向けに調整済み。  
+内部データ名は互換性のため一部残しているが、ユーザーに見える主要UIは以下へ読み替えている。
+
+```text
+Overview = 戦略概要
+Timeline = タイムライン
+Pre-War = 投資前チェック
+Assessment = 経営判断監査
+Evidence = 証拠リンク
+Audit Opinion = 監査意見
+```
+
+### 4.2 UIの相互作用
+
+クリック可能な領域と、選択結果を説明する領域は見た目を分離済み。
+
+```text
+selection-section = クリックで選択が変わる領域
+detail-section / selected-detail-section = 選択結果の説明領域
+static-section = クリックできない集計・説明領域
+```
+
+タイムラインカードはカード全体をクリック可能にしている。  
+キーボード操作では Enter / Space で選択を切り替えられる。  
+選択処理は `app.js` の `selectTimelinePhase()` が担う。
+
+### 4.3 後知恵禁止
+
+後年資料は、2021年判断の直接証拠にしない。
+
+```text
+使える:
+- 後年の検証資料
+- 事後対照
+- 当初仮説がどのような結果に接続したかの説明
+
+使えない:
+- 2021年判断の直接証拠
+- 経営陣の当時認識の断定
+- ratingBasis の直接根拠
+```
+
+実装上、後年資料の `evidenceLink` は `target` に `事後対照` を含め、`timeFit: "事後"` かつ `availableAtDecisionTime: false` として扱っている。
+`lintCaseMethodology` も `timeFit: "事後"` を正式に許容し、事後資料が判断時点利用可能扱いになっていないかを検査する。
+
+### 4.4 内部資料不足の扱い
+
+以下を断定しない。
+
+```text
+公開資料に見えない = 内部で検討していない
+```
+
+表現は以下に寄せる。
+
+```text
+公開資料上、評価形跡を確認できない。
+内部で検討されていなかったとは断定できない。
+```
+
+---
+
+## 5. 検証結果
+
+### 5.1 Node validation
+
+直近確認済み。
+
+```bash
+node verify.js
+```
+
+結果。
+
+```text
+=== Running Validations ===
+1. validateCaseRegistry:
+Errors: 0
+
+2. validateCaseReferences:
+- toyota-multi-pathway-2021: 0 errors
+- honda-ev-concentration-2021: 0 errors
+
+3. lintCaseMethodology:
+- toyota-multi-pathway-2021: 0 errors
+- honda-ev-concentration-2021: 0 errors
+
+ALL CHECKS PASSED!
+```
+
+### 5.2 Cache-busting
+
+直近確認済み。
+
+```bash
+node tools/check-cache-busting.mjs
+```
+
+結果。
+
+```text
+cache-busting ok: 20260627-auto-ev-shift-r9 (8 version markers checked)
+```
+
+### 5.3 Browser smoke test
+
+前セッションで確認済み。
+
+```text
+URL: http://127.0.0.1:8123/index.html
+
+確認済み:
+- ケースセレクタに Toyota / Honda の2件表示
+- optgroup は 自動車産業EVシフト（2020年代）
+- Toyota から Honda への counterpart ボタン表示
+- Honda から Toyota への counterpart ボタン表示
+- 戦略概要 / タイムライン / 投資前チェック / 経営判断監査 / 証拠リンク / 監査意見 描画
+- タイムラインカード全体クリックで「選択中」説明が切り替わる
+- タイムラインカードは Enter / Space でも選択可能
+- 投資前チェックの静的パネルと、経営判断監査のクリック可能マトリクス / 選択中詳細パネルの見た目が分かれる
+- 証拠リンク画面の横はみ出しなし
+- link-button の不要な矢印なし
+- undefined 表示なし
+- console warning/error なし
+```
+
+### 5.4 ローカルHTTPサーバー
+
+前セッションでは以下が起動していた。
+
+```text
+python -m http.server 8123
+PID: 11688
+```
+
+再開時点でまだ起動中とは限らない。必要なら `http://127.0.0.1:8123/index.html` を開く前にプロセス確認または再起動する。
+
+---
+
+## 6. 次にやること
+
+優先順。
+
+```text
+1. 必要なら browser smoke test を再実行する
+2. 変更内容を commit / push する
+```
+
+---
+
+## 7. 次作業の詳細
+
+### 7.1 証拠リンク表記の統一
+
+主要ナビゲーション、証拠画面見出し、関連説明は `証拠リンク` に統一済み。
+内部の evidence graph / claim-evidence link という構造名は、互換性と意味の明確さを優先して急いで改名しない。
+
+### 7.2 evidence の正式出典化
+
+Toyota evidence は 8件すべてに公式URL・正式アーカイブURL・信頼できる外部資料URLのいずれかを追加済み。Honda evidence も 8件すべてに公式URL・正式アーカイブURL・信頼できる報道URLのいずれかを追加済み。Honda/GM 量販EV共同開発中止（HON-E-004）は公式発表URL未確認のため Reuters 報道URLを採用している。
+
+次にやる場合は、公式資料を優先する。
+
+```text
+Toyota:
+- 2017年 電動車普及・電動化目標関連発表
+- 2021年12月 Battery EV Strategies briefing
+- multi-pathway approach に関する公式説明
+- 統合報告書 / 有価証券報告書 / 決算説明資料
+- 2024年 Toyota Sales, Production, and Export Results
+- IEA Global EV Outlook 2024 の中国EV市場・価格競争分析
+
+Honda:
+- 2021年 EV/FCEV 2040年100%目標発表
+- 2021〜2022年 電動化戦略説明会資料
+- 2022年 Honda/GM 量販価格帯EV共同開発発表
+- 2023年 Honda/GM 量販EV共同開発中止に関する Reuters 報道（公式発表URL未確認、信頼できる報道URL確認済み）
+- 統合報告書 / 有価証券報告書 / 決算説明資料
+```
+
+公式資料が足りない場合のみ、同時代外部資料や後年分析を補助資料として使う。現時点では Toyota / Honda evidence のURL付与は一巡済み。
+
+### 7.3 timeFit 設計
+
+`docs/CANON.md` で想定していた `timeFit: "事後"` を実装へ反映済み。
+
+```text
+- lintCaseMethodology の validTimeFits に "事後" を追加済み
+- timeFit: "直接" は availableAtDecisionTime: true を必須化
+- timeFit: "事後" は availableAtDecisionTime: false を必須化
+- 後年資料リンクは timeFit: "事後" として事後対照であることを明示
+```
+
+### 7.4 cache-busting checker
+
+現在の確認結果は以下。
+
+```text
+cache-busting ok: 20260627-auto-ev-shift-r9 (8 version markers checked)
+```
+
+`tools/check-cache-busting.mjs` は `index.html` の `styles.css?v=20260627-auto-ev-shift-r9` も確認対象に含めるよう更新済み。
+出力件数は JavaScript import だけではなく stylesheet を含むため、`version markers checked` として数える。
+
+---
+
+## 8. 禁止事項
+
+```text
+- app.js にケースデータを直書きしない
+- 旧戦争ケースを新リポジトリへ混ぜない
+- 後年資料を2021年判断の直接証拠にしない
+- 公開資料にないことを内部未検討と断定しない
+- Toyota = 正解 / Honda = 失敗 という単純な結論にしない
+- rating を初期実装で無理に確定しない
+- counterpartCaseId を片方向だけにしない
+- evidenceLinks の canSay / cannotSay を空欄にしない
+```
+
+---
+
+## 9. 現時点の結論
+
+```text
+Toyota:
+合理的なリアルオプション戦略仮説と、
+BEV・SDV転換遅れ仮説の双方が成立する。
+
+Honda:
+合理的な先行コミットメント仮説と、
+EV需要・提携依存・実行能力の過大評価仮説の双方が成立する。
+```
+
+このプロジェクトの目的は、勝敗判定ではなく、当時の意思決定プロセスとリスク評価の監査である。
+
+## 10. 第三者評価への対応：実装済みの骨格
+
+第三者評価により、以下5点が改善課題として整理された。
+
+```text
+1. 「当時利用可能だった情報」の境界が曖昧
+2. リスク軸間の相互作用が弱い
+3. 「未確定」の意味が技術的未確定なのか認識論的未確定なのか曖昧
+4. 反証証拠を隠さないための運用担保が不足
+5. 想定利用者・用途が未定義
+```
+
+`docs/CANON.md` には以下の章として落とし込み済み。
+
+```text
+30. evidenceAccessScope：利用可能情報の境界
+31. evidenceWeight：証拠の重み付け
+32. uncertaintyReason：未確定理由の分類
+33. adversarialReview：構造的反論レビュー
+34. intendedUse：利用文脈の明示
+35. 第三者評価への対応方針
+```
+
+---
+
+## 11. 導入済みの第三者評価対応フィールド
+
+Toyota / Honda 両ケースへ以下を追加済み。
+
+```text
+優先1:
+evidenceAccessScope
+
+優先2:
+uncertaintyReason
+
+優先3:
+intendedUse
+
+優先4:
+evidenceWeight
+
+優先5:
+adversarialReview
+```
+
+最初に Toyota / Honda 両ケースへ入れる標準値。
+
+```js
+evidenceAccessScope: {
+  mode: "public_osint",
+  description: "公開資料・公式発表・同時代報道・公開市場データに基づく外部監査。",
+  limitation: "取締役会資料、内部投資審査、採算見積もり、社内反対意見は通常確認できないため、経営陣の実際の認識は断定しない。",
+}
+
+uncertaintyReason: [
+  "internal_documents_unavailable",
+  "outcome_not_mature",
+  "evidence_conflicting",
+]
+
+intendedUse: {
+  primary: "research_case_study",
+  secondary: [
+    "strategy_training",
+    "investor_due_diligence",
+  ],
+  notFor: [
+    "legal_liability_determination",
+    "investment_recommendation",
+    "definitive_management_blame",
+  ],
+}
+```
+
+---
+
+## 12. 今後のブラッシュアップ時の注意
+
+```text
+- evidenceAccessScope は、公開資料監査なのか、内部資料監査なのかを区別するための必須メタ情報とする。
+- 初期 Toyota / Honda は public_osint 監査として扱う。
+- uncertaintyReason により、rating: "未確定" の理由を明示する。
+- evidenceWeight は E0〜E4 とは別物として扱う。
+- adversarialReview は、反証証拠を隠さないための運用担保として追加する。
+- intendedUse により、法的責任認定・投資推奨・経営者断罪ではないことを明示する。
+```
+
+## 13. 第三者評価2への対応：比較標準化・因果構造・ギャップ管理
+
+第三者評価2では、追加で以下が指摘された。
+
+```text
+1. 企業間比較のための標準化が必要
+2. エビデンスリンクの階層化が必要
+3. 戦略の因果構造の可視化が必要
+4. 未評価ギャップの昇格基準が必要
+```
+
+`docs/CANON.md` には以下の章として落とし込む。
+
+```text
+36. crossCompanyTemplate：企業間比較の共通テンプレート
+37. normalizationFactors：企業規模・地域差・事業構造の補正
+38. evidenceHierarchy：証拠リンクの階層化
+39. causalScenarioMap：戦略の因果構造とシナリオ分析
+40. scenarioSet：ex-ante シナリオ分析
+41. gapEscalationProtocol：未評価ギャップの昇格基準
+```
+
+---
+
+## 14. 次回実装で優先する追加フィールド
+
+次回のケースデータ更新では、以下の順で追加する。
+
+```text
+優先1:
+evidenceHierarchy
+
+優先2:
+gapEscalationProtocol / informationRequest
+
+優先3:
+crossCompanyTemplate
+
+優先4:
+scenarioSet
+
+優先5:
+normalizationFactors
+
+優先6:
+causalScenarioMap
+```
+
+理由。
+
+```text
+evidenceHierarchy は既存 evidence / evidenceWeight に接続しやすい。
+gapEscalationProtocol は Pre-War Checklist と ratingReadiness に直結する。
+crossCompanyTemplate と scenarioSet は Toyota / Honda 比較の解釈力を上げる。
+normalizationFactors と causalScenarioMap は重要だが、UI・データ設計の追加検討が必要。
+```
+
+---
+
+## 15. 次回実装時の注意
+
+```text
+- evidenceHierarchy は evidenceWeight と重複させず、出典階層 A/B/C/D として扱う。
+- A資料は一次資料を意味するが、真実性が無条件に高いわけではない。
+- normalizationFactors は免責ではなく、比較条件の注記として扱う。
+- causalScenarioMap は初回では UI 化せず、まず Audit Opinion の主要因果連鎖として扱う。
+- scenarioSet は「どちらの企業が正しいか」ではなく「どの未来を重く見たか」の監査に使う。
+- gapEscalationProtocol により、未評価ギャップを中立・要追加資料・監査上の懸念・rating制約に分ける。
+```
+
+## 16. 追加レビューへの対応：運用バイアス・疎マトリクス・フレーミング効果
+
+追加レビューにより、以下3点が指摘された。
+
+```text
+1. adversarialReview の「最強主張」には非対称問題がある
+2. 疎マトリクスでは、空白セルの意味が曖昧になる
+3. Toyota主ケース / Honda対照ケースはフレーミング効果を持つ
+```
+
+`docs/CANON.md` には以下の章として落とし込む。
+
+```text
+42. adversarialReviewGovernance：最強主張の非対称問題
+43. assessmentCoverage：疎マトリクスと空白セルの意味
+44. symmetricComparisonEntry：主ケース/対照ケースのフレーミング効果
+```
+
+---
+
+## 17. 次回実装で優先する追加フィールド
+
+次回のケースデータ・UI更新では、以下を優先する。
+
+```text
+優先1:
+assessmentCoverage
+
+優先2:
+comparisonEntryMode
+
+優先3:
+adversarialReview.reviewerProtocol / steelmanStandard
+
+優先4:
+Compareビューまたは neutral landing の検討
+```
+
+理由。
+
+```text
+assessmentCoverage は、既存の疎マトリクス UI の曖昧さを直接解消する。
+comparisonEntryMode は、Toyota が正準ケースに見えるリスクを緩和する。
+adversarialReviewGovernance は重要だが、外部レビュアーや sourceEvidenceLinks の整理が必要なため第2段階とする。
+Compareビューはフレーミング効果を根本的に緩和するが、UI変更量が大きいため中期課題とする。
+```
+
+---
+
+## 18. 次回実装時の注意
+
+```text
+- 「セルがない」と「E0」は別物として扱う。
+- 空白セルには coverageState を持たせる。
+- in_scope_unassessed は informationRequest の候補にする。
+- out_of_scope は gapEscalationProtocol の対象外にする。
+- Toyota を DEFAULT_CASE_ID にしていることは、Toyota を基準・正解とみなすものではないと明示する。
+- adversarialReview の strongestArgument には、可能な限り sourceEvidenceLinks と selectionRationale を付ける。
+- 単一著者レビューでは asymmetryRisk を明示する。
+```
+
+## 19. 再追加レビューへの対応：過剰設計・rating到達性・OSINTバイアス
+
+再追加レビューにより、以下6点が指摘された。
+
+```text
+1. メタ枠組みが監査対象を追い越している
+2. rating: 未確定 が構造的に恒久化している疑い
+3. Toyota / Honda 比較で、戦略選択と構造的制約が交絡している
+4. OSINT監査では、公開資料が豊富な企業が有利になる
+5. 2021年時点の合理的期待ベースラインが欠けている
+6. 初期描画の `暫定 --` と Compareビュー未実装が信頼性に響く
+```
+
+`docs/CANON.md` には以下の章として落とし込む。
+
+```text
+45. frameworkScopeDiscipline：メタ枠組みの過剰化リスク
+46. ratingReadinessPositiveCriteria：rating 到達条件
+47. strategyChoiceVsCapacityConstraint：戦略選択と構造的キャパシティの分離
+48. disclosureBiasGuard：OSINT監査における開示バイアス
+49. rationalExpectationBaseline：反実仮想ベースライン
+50. initialStateClarity：初期描画と状態表示
+51. compareViewPriority：Compareビューの優先度変更
+```
+
+---
+
+## 20. 次回作業の優先順位変更
+
+次回以降の作業は、仕様候補の追加よりもケース追加・到達性検査を優先する。
+
+```text
+優先1:
+3社目ケースを追加する。
+候補は BYD / Tesla / VW のいずれか。
+
+優先2:
+ratingReadinessPositiveCriteria を使い、rating 到達経路が実在するか検算する。
+
+優先3:
+initialStateClarity を実装し、`暫定 --` を廃止または意味分離する。
+
+優先4:
+strategyChoiceVsCapacityConstraint を Toyota / Honda に追加する。
+
+優先5:
+disclosureBias を evidenceWeight に接続する。
+
+優先6:
+rationalExpectationBaseline を 2021年時点の IEA / BNEF / 規制計画で構成する。
+
+優先7:
+neutral landing または Compareビューの最小実装を検討する。
+```
+
+---
+
+## 21. 作業停止ルール
+
+以下に該当する場合、新規仕様追加を止める。
+
+```text
+- 実ケース数が3未満
+- 直近3回の変更が仕様追加のみ
+- 全ケース ratingReadiness が未到達のまま
+- 新規仕様候補がケースデータに反映されていない
+- 追加仕様の検証方法が未定義
+```
+
+次の原則を採用する。
+
+```text
+仕様を増やす前に、次の企業を測る。
+定規の精密化は、測定対象の追加によって検証する。
+```
+
+---
+
+## 22. 次回実装時の注意
+
+```text
+- 未確定は正当な結論であり得るが、常に未確定になるなら設計不全を疑う。
+- KO条件だけでなく、ratingReadiness 到達条件を必ず実装する。
+- Toyota multi-pathway と Honda EV集中を、純粋な自由選択として扱わない。
+- 戦略選択と構造的キャパシティ制約を分ける。
+- 公式資料は一次資料だが、IRナラティブとしての開示バイアスを持つ可能性がある。
+- 公開資料にあることを、内部で十分検討したことと同一視しない。
+- 2021年時点の合理的期待ベースラインを置く。
+- Compareビューまたは neutral landing は、フレーミング効果対策として優先度を上げる。
+```
