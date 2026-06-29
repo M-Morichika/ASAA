@@ -1,5 +1,5 @@
-import { cases } from './data/cases/index.js?v=20260627-auto-ev-shift-r7';
-import { validateCaseRegistry, validateCaseReferences, lintCaseMethodology } from './data/auditSchema.js?v=20260627-auto-ev-shift-r7';
+import { cases } from './data/cases/index.js?v=20260627-auto-ev-shift-r16';
+import { validateCaseRegistry, validateCaseReferences, lintCaseMethodology } from './data/auditSchema.js?v=20260627-auto-ev-shift-r16';
 
 console.log("=== Running Validations ===");
 console.log("1. validateCaseRegistry:");

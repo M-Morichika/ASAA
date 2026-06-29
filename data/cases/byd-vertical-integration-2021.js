@@ -73,10 +73,27 @@ const assessmentCells = [
 ];
 
 const assessmentCoverage = [
+  { axis: "市場需要・地域差の見積もり", phase: "Blade Battery・e-Platform 実行", coverage: "out_of_scope", rationale: "この局面では市場需要そのものではなく、Blade Battery と e-Platform の技術・量産実行を中心に評価するため。" },
+  { axis: "市場需要・地域差の見積もり", phase: "価格競争・海外展開", coverage: "in_scope_unassessed", rationale: "中国内の価格競争、海外需要、地域分散は評価対象だが、初期精査では独立セルとしてまだ評価していない。" },
+  { axis: "市場需要・地域差の見積もり", phase: "公開資料限界・別ケース境界", coverage: "out_of_scope", rationale: "この局面では市場需要の実体評価ではなく、公開資料から内部判断をどこまで読めるかを扱うため。" },
+  { axis: "規制・インフラ・政策依存の見積もり", phase: "Blade Battery・e-Platform 実行", coverage: "out_of_scope", rationale: "この局面では政策依存ではなく、電池・プラットフォーム技術の公開説明と量産実行を中心に評価するため。" },
+  { axis: "規制・インフラ・政策依存の見積もり", phase: "価格競争・海外展開", coverage: "in_scope_unassessed", rationale: "海外関税、補助金、各国規制は評価対象だが、初期精査では一次資料に基づく独立評価まで到達していない。" },
+  { axis: "規制・インフラ・政策依存の見積もり", phase: "公開資料限界・別ケース境界", coverage: "out_of_scope", rationale: "この局面では政策リスクの中身ではなく、公開資料監査の限界と内部資料不足を扱うため。" },
+  { axis: "電池・供給網・コストの見積もり", phase: "垂直統合・EV集中戦略の形成", coverage: "in_scope_unassessed", rationale: "電池・供給網は垂直統合判断の中核だが、初期精査では Blade Battery 実行局面のセルに寄せており、形成局面の独立セルは未評価とする。" },
+  { axis: "電池・供給網・コストの見積もり", phase: "価格競争・海外展開", coverage: "in_scope_unassessed", rationale: "価格競争下の電池コスト・供給網耐久力は評価対象だが、現時点では資本配分・収益耐久力セルに一部含めるに留めている。" },
+  { axis: "電池・供給網・コストの見積もり", phase: "公開資料限界・別ケース境界", coverage: "out_of_scope", rationale: "この局面では電池コストの実体評価ではなく、公開資料から内部採算判断を断定できない境界を扱うため。" },
+  { axis: "SDV・ソフトウェア競争の認識", phase: "垂直統合・EV集中戦略の形成", coverage: "out_of_scope", rationale: "垂直統合形成局面では電池・主要部品・車両内製を中心に扱い、SDV・ソフトウェア競争は主評価軸にしないため。" },
+  { axis: "SDV・ソフトウェア競争の認識", phase: "公開資料限界・別ケース境界", coverage: "out_of_scope", rationale: "この局面ではSDV能力の実体評価ではなく、公開資料監査の限界を扱うため。" },
+  { axis: "資本配分・収益耐久力", phase: "垂直統合・EV集中戦略の形成", coverage: "in_scope_unassessed", rationale: "垂直統合に伴う固定費・設備投資負担は評価対象だが、初期精査では独立セルとしてまだ評価していない。" },
+  { axis: "資本配分・収益耐久力", phase: "Blade Battery・e-Platform 実行", coverage: "in_scope_unassessed", rationale: "Blade Battery と e-Platform の投資回収・量産負担は評価対象だが、公開資料上の採算感応度をまだ十分に接続していない。" },
+  { axis: "資本配分・収益耐久力", phase: "公開資料限界・別ケース境界", coverage: "out_of_scope", rationale: "この局面では資本配分の実体評価ではなく、内部投資審査や撤退基準が公開資料から確認しにくい境界を扱うため。" },
   { axis: "提携・外部依存・実行能力", phase: "垂直統合・EV集中戦略の形成", coverage: "out_of_scope", rationale: "初期精査では、外部提携ではなく電池・主要部品・車両の内製判断を中心に扱うため。" },
   { axis: "提携・外部依存・実行能力", phase: "Blade Battery・e-Platform 実行", coverage: "out_of_scope", rationale: "BYDケースの初期 skeleton では、提携依存よりも内製・垂直統合の実行能力を中心に見る。" },
   { axis: "提携・外部依存・実行能力", phase: "価格競争・海外展開", coverage: "in_scope_unassessed", rationale: "海外販売網・現地生産・外部販売チャネル依存は評価対象だが、初期追加時点では未評価とする。" },
   { axis: "提携・外部依存・実行能力", phase: "公開資料限界・別ケース境界", coverage: "out_of_scope", rationale: "このフェーズでは公開資料監査の限界を扱い、提携・外部依存の実行能力評価とは分ける。" },
+  { axis: "ガバナンス・説明責任・修正基準", phase: "垂直統合・EV集中戦略の形成", coverage: "out_of_scope", rationale: "形成局面では戦略判断の内容を扱い、ガバナンス・説明責任は公開資料限界局面のセルでまとめて扱うため。" },
+  { axis: "ガバナンス・説明責任・修正基準", phase: "Blade Battery・e-Platform 実行", coverage: "out_of_scope", rationale: "実行局面では技術・量産の公開説明を扱い、内部の修正基準や説明責任は別局面で扱うため。" },
+  { axis: "ガバナンス・説明責任・修正基準", phase: "価格競争・海外展開", coverage: "out_of_scope", rationale: "価格競争・海外展開局面では採算・政策リスクを扱い、ガバナンス上の開示限界は別局面で扱うため。" },
   { axis: "SDV・ソフトウェア競争の認識", phase: "価格競争・海外展開", coverage: "in_scope_unassessed", rationale: "海外展開時の車両OS・ソフトウェア競争力は評価対象だが、初期精査では到達可能な一次資料をまだ確保していない。" },
 ];
 

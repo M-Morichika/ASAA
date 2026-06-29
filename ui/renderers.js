@@ -11,7 +11,7 @@ import {
   resolveStatus,
   statusClass,
   statusOrder,
-} from "../data/auditSchema.js?v=20260627-auto-ev-shift-r12";
+} from "../data/auditSchema.js?v=20260627-auto-ev-shift-r16";
 
 export function createRenderers(auditData, state) {
 function getAssumption(id) {
@@ -184,6 +184,57 @@ function renderAdversarialReview() {
   `;
 }
 
+function renderAssessmentCoverage() {
+  const coverageItems = auditData.assessmentCoverage || [];
+  if (!coverageItems.length) return "";
+
+  const coverageLabels = {
+    assessed: "評価済み",
+    e0_no_public_trace: "E0: 公開資料上の評価形跡なし",
+    in_scope_unassessed: "評価対象・未評価",
+    out_of_scope: "評価対象外",
+    implementation_pending: "実装未了",
+  };
+  const coverageOrder = ["in_scope_unassessed", "implementation_pending", "e0_no_public_trace", "out_of_scope", "assessed"];
+  const coverageCounts = coverageOrder
+    .map((coverage) => ({ coverage, count: coverageItems.filter((item) => item.coverage === coverage).length }))
+    .filter((item) => item.count > 0);
+  const summary = coverageCounts.map((item) => `${coverageLabels[item.coverage] || item.coverage} ${item.count}`).join(" / ");
+  const groups = coverageCounts.map(({ coverage }) => ({
+    coverage,
+    items: coverageItems.filter((item) => item.coverage === coverage),
+  }));
+
+  return `
+    <details class="audit-disclosure compact-disclosure">
+      <summary><span>空白セルの扱い</span><span class="summary-meta">${summary || `${coverageItems.length}件`}</span></summary>
+      <div class="audit-disclosure-body">
+        ${groups
+            .map(
+              (group) => `
+                <div class="queue-group coverage-group">
+                  <h4>${coverageLabels[group.coverage] || group.coverage}</h4>
+                  <dl class="metric-list">
+                    ${group.items
+                      .map(
+                        (item) => `
+                          <div class="metric-row">
+                            <dt>${item.axis} / ${item.phase}</dt>
+                            <dd>${item.rationale || "理由未設定"}</dd>
+                          </div>
+                        `,
+                      )
+                      .join("")}
+                  </dl>
+                </div>
+              `,
+            )
+            .join("")}
+      </div>
+    </details>
+  `;
+}
+
 function renderEvidenceWeight(evidence) {
   const weight = evidence?.evidenceWeight;
   if (!weight) return "";
@@ -347,12 +398,27 @@ function renderTimeline() {
 }
 
 function renderAssessment() {
-  const phases = [...new Set(auditData.assessmentCells.map((cell) => cell.phase))];
-  const axes = [...new Set(auditData.assessmentCells.map((cell) => cell.axis))];
+  const coverageItems = auditData.assessmentCoverage || [];
+  const coverageLabels = {
+    assessed: "評価済み",
+    e0_no_public_trace: "E0",
+    in_scope_unassessed: "未評価",
+    out_of_scope: "対象外",
+    implementation_pending: "実装待ち",
+  };
+  const phases = [
+    ...new Set([
+      ...(auditData.phases || []).map((phase) => phase.name),
+      ...auditData.assessmentCells.map((cell) => cell.phase),
+      ...coverageItems.map((item) => item.phase),
+    ]),
+  ];
+  const axes = [...new Set([...auditData.assessmentCells.map((cell) => cell.axis), ...coverageItems.map((item) => item.axis)])];
   const selectedCell = getAssessmentCell(state.activeAssessmentCellId) || auditData.assessmentCells[0];
   const evidenceRows = selectedCell
     ? auditData.evidenceLinks.filter((link) => link.assessmentCellId === selectedCell.id)
     : [];
+  const getCoverage = (axis, phase) => coverageItems.find((item) => item.axis === axis && item.phase === phase) || null;
 
   return `
     <section class="section selection-section">
@@ -375,6 +441,7 @@ function renderAssessment() {
                       const cell = auditData.assessmentCells.find(
                         (item) => item.axis === axis && item.phase === phase,
                       );
+                      const coverage = cell ? null : getCoverage(axis, phase);
                       const isSelected = cell && cell.id === selectedCell.id;
                       return `
                         <td>
@@ -391,7 +458,14 @@ function renderAssessment() {
                                 <span class="cell-meta">証拠: ${cell.evidenceStrength}</span>
                               </button>
                             `
-                            : `<span class="cell-undefined" aria-hidden="true">—</span>`}
+                            : coverage
+                              ? `
+                                <span class="coverage-cell coverage-${coverage.coverage}" title="${coverage.rationale || ""}">
+                                  <span>${coverageLabels[coverage.coverage] || coverage.coverage}</span>
+                                  <small>${coverage.coverage === "in_scope_unassessed" ? "要確認" : "空白"}</small>
+                                </span>
+                              `
+                              : `<span class="cell-undefined" aria-hidden="true">—</span>`}
                         </td>
                       `;
                     })
@@ -403,6 +477,7 @@ function renderAssessment() {
         </tbody>
       </table>
       <p class="matrix-note muted">評価軸×局面は直積で表示しているため、監査対象としていない組み合わせ（—）は意図的に空白です。各ケースは責任範囲を絞った監査であり、全マスを埋めることは目的ではありません。</p>
+      ${renderAssessmentCoverage()}
     </section>
 
     <section class="section detail-section selected-detail-section">

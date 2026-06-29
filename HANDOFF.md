@@ -2,7 +2,7 @@
 
 # Automotive Strategy Accountability Audit — Handoff
 
-最終更新: 2026-06-27
+最終更新: 2026-06-29
 状態: slim版
 
 ---
@@ -35,7 +35,7 @@ docs/archive/HANDOFF_full_before_slim_20260627.md
 - counterpartCaseId は Toyota / Honda 間で双方向リンク済み。BYD は初期 skeleton では対照ケース未指定
 - rating は3ケースとも 未確定
 - ratingReadiness は3ケースとも 未到達
-- cache-busting は 20260627-auto-ev-shift-r12 に統一済み
+- cache-busting は 20260627-auto-ev-shift-r16 に統一済み
 - Honda evidence 8件に公式URL・正式アーカイブURL・信頼できる報道URLのいずれかを追加済み
 - Toyota evidence も公式URL・正式アーカイブURL・信頼できる外部資料URLのいずれかを追加済み
 - timeFit: "事後" を正式許容済み
@@ -46,6 +46,15 @@ docs/archive/HANDOFF_full_before_slim_20260627.md
 - BYD evidence のURL到達性を一巡し、HKEX PDF・BYD公式ページ・正式アーカイブURLへ修正済み
 - BYD の4 claims はすべて支持・反証の両側 evidenceLink を持つ状態まで精査済み
 - BYD assessmentCoverage は out_of_scope / in_scope_unassessed の説明を補強済み
+- 2026-06-29 に BYD evidence 6件のURL到達性を再確認し、すべて 200 OK を確認済み
+- 2026-06-29 に BYD assessmentCoverage を経営判断監査UIの折りたたみ表示へ接続済み
+- verify.js の cache-busting import を現行版に同期済み
+- 繰り返し確認用に tools/check-evidence-urls.mjs, tools/report-case-balance.mjs, tools/check-assessment-coverage.mjs を追加済み
+- 2026-06-29 に BYD assessmentCoverage を全空白セルへ補強し、BYD の unexplained blank cell は 0 件になった
+- 2026-06-29 に Toyota / Honda assessmentCoverage も全空白セルへ補強し、3ケースすべて unexplained blank cell は 0 件になった
+- 2026-06-29 にサブエージェントレビューを反映し、空白セル本体に coverage 種別を表示、summary に未評価/対象外件数を表示、coverage 一覧を種別別にグループ化済み
+- tools/check-assessment-coverage.mjs は strict 時に既存セル coverage 矛盾も失敗扱いにし、既知軸チェックを追加済み
+- tools/check-evidence-urls.mjs は reachable / access-restricted / unavailable を分けて集計するよう更新済み
 ```
 
 ---
@@ -73,58 +82,93 @@ node tools/check-cache-busting.mjs
 結果。
 
 ```text
-cache-busting ok: 20260627-auto-ev-shift-r12 (9 version markers checked)
+cache-busting ok: 20260627-auto-ev-shift-r16 (9 version markers checked)
 ```
 
-ブラウザ smoke test では、Toyota / Honda / BYD の3ケース表示、BYD選択、6タブ描画、証拠リンク表示、投資前チェックの未評価ギャップ表示、undefined 表示なし、console warning/error なしを確認済み。
+直近確認済み。
+
+```bash
+node tools/report-case-balance.mjs
+```
+
+結果。
+
+```text
+Claim balance ok: all claims have both support and counter evidence links
+```
+
+直近確認済み。
+
+```bash
+node tools/check-assessment-coverage.mjs --strict
+```
+
+結果。
+
+```text
+Assessment coverage check ok (strict): 0 error(s), 0 warning(s)
+```
+
+直近確認済み。
+
+```bash
+node tools/check-evidence-urls.mjs
+```
+
+結果。
+
+```text
+Evidence URL check ok: 23 reachable, 1 access-restricted, 0 unavailable
+```
+
+補足: Reuters の HON-E-004 は 401 を返すが、アクセス制限・bot対策として WARN 扱い。404/ネットワークエラーは失敗扱い。
+
+ブラウザ smoke test では、Toyota / Honda / BYD の3ケース表示、3ケースそれぞれの assessmentCoverage 折りたたみ表示、空白セル上の coverage 種別表示、summary の未評価/対象外件数表示、BYD選択、6タブ描画、証拠リンク表示、投資前チェックの未評価ギャップ表示、undefined 表示なし、console warning/error なしを確認済み。
 
 ---
 
 ## 3. 次にやること
 
-優先順位は、BYDケース追加そのものから、BYDケースの内容精査へ切り替える。
+優先順位は、assessmentCoverage の横展開から、3ケースでスキーマ過不足を確認する段階へ切り替える。
 
 ```text
 今すぐやる:
-BYDケースの内容精査
+3ケースでスキーマ過不足を確認する
 ```
 
 目的。
 
 ```text
-- BYD追加により、既存の痩せた CANON だけで3社目を登録できることは確認済み
-- 次は BYD の証拠URL到達性、評価軸、反証リンク、空白セルの意味を精査する
-- 追加仕様ではなく、実ケースでスキーマの過不足を確認する
+- Toyota / Honda / BYD は assessmentCoverage により全空白セルの意味を説明済み
+- 次は 3ケースを横断して、評価軸・ratingReadiness・Compareビュー要否などのスキーマ過不足を確認する
+- 追加仕様ではなく、実ケースで必要性が出たものだけ昇格を検討する
 ```
 
 推奨タスク名。
 
 ```text
-Review third ASAA case: BYD vertical integration strategy
+Review schema sufficiency across three ASAA cases
 ```
 
 対象ケース。
 
 ```text
-id:
-byd-vertical-integration-2021
+target:
+toyota-multi-pathway-2021
+honda-ev-concentration-2021
 
-name:
-自動車産業EVシフト 2020年代：BYD 垂直統合・EV集中戦略
-
-scope:
-2021年前後以降のEV・電池・垂直統合・中国市場・価格競争・海外展開に関する戦略判断
+focus:
+Toyota / Honda / BYD 横断でのスキーマ過不足
 ```
 
 作業順。
 
 ```text
-1. BYD の公式URL・HKEX PDF・IEAリンクの到達性を確認する
-2. BYD の claims / evidenceLinks が片側 claim になっていないか再確認する
-3. assessmentCoverage の空白セル説明がUI/文書上十分か確認する
-4. 必要なら BYD の証拠を追加する。ただし新規メタ仕様は原則追加しない
-5. verify / cache-busting / focused node --check / git diff --check を通す
-6. 3ケースでスキーマ過不足を確認する
+1. node verify.js / tools 3本で現状の床を確認する
+2. ratingReadiness 到達条件が3ケースで足りているか確認する
+3. Compareビュー・neutral landing の実需要を3ケース比較から判断する
+4. 新規メタ仕様は原則追加しない
+5. verify / cache-busting / report-case-balance / check-assessment-coverage --strict / git diff --check を通す
 ```
 
 ---
@@ -200,14 +244,13 @@ E0 ≠ 未収集
 未収集 ≠ 形跡なし
 ```
 
-BYDケースでは、全セルを機械的に埋めない。
-初期 skeleton では `assessmentCoverage` に out_of_scope / in_scope_unassessed を追加済み。
+BYDケースでは、全セルを機械的に埋めず、`assessmentCoverage` で out_of_scope / in_scope_unassessed を明示済み。
 
 ---
 
 ## 5. 後回しにすること
 
-以下は、BYDケースの内容精査が完了するまで原則として後回しにする。
+以下は、3ケース横断のスキーマ過不足確認が完了するまで原則として後回しにする。
 
 ```text
 - adversarialReviewGovernance の精緻化
@@ -223,15 +266,15 @@ BYDケースでは、全セルを機械的に埋めない。
 ```text
 破棄ではない。
 METHOD_APPENDIX の候補層に留める。
-BYD追加時に本当に必要になったものだけ昇格を検討する。
+3ケース精査で本当に必要になったものだけ昇格を検討する。
 ```
 
 Compareビューについて。
 
 ```text
 neutral landing / Compareビューは重要だが、
-BYDケースの内容精査前に本格実装しない。
-まず3社目追加で、比較設計の実需要を確認する。
+3ケース横断のスキーマ過不足確認前に本格実装しない。
+まず3ケースの実データから、比較設計の実需要を確認する。
 ```
 
 ## 6. 次回実装時の注意

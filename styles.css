@@ -533,6 +533,47 @@ select {
   opacity: 0.45;
 }
 
+.coverage-cell {
+  display: grid;
+  gap: 5px;
+  min-height: 70px;
+  padding: 9px;
+  border: 1px dashed var(--line);
+  border-radius: 6px;
+  background: rgba(248, 250, 249, 0.72);
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.coverage-cell span {
+  color: var(--ink);
+  font-weight: 700;
+}
+
+.coverage-cell small {
+  font-size: 11px;
+}
+
+.coverage-in_scope_unassessed {
+  border-color: var(--amber);
+  background: rgba(169, 120, 36, 0.1);
+}
+
+.coverage-implementation_pending {
+  border-color: var(--violet);
+  background: rgba(114, 89, 155, 0.08);
+}
+
+.coverage-e0_no_public_trace {
+  border-color: var(--red);
+  background: rgba(166, 64, 55, 0.08);
+}
+
+.coverage-group + .coverage-group {
+  margin-top: 18px;
+}
+
 .matrix-note {
   margin: 10px 0 0;
   font-size: 0.8rem;

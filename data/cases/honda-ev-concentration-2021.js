@@ -184,6 +184,29 @@ const assessmentCells = [
   },
 ];
 
+const assessmentCoverage = [
+  { axis: "市場需要・地域差の見積もり", phase: "電池・SDV・提携・供給網設計", coverage: "out_of_scope", rationale: "この局面では需要見積もりではなく、電池・SDV・提携による実行基盤を中心に評価するため。" },
+  { axis: "市場需要・地域差の見積もり", phase: "需要変化・競争激化・戦略修正", coverage: "in_scope_unassessed", rationale: "需要鈍化・地域差への修正能力は評価対象だが、現時点では資本配分セルに寄せており、独立セルは未評価とする。" },
+  { axis: "市場需要・地域差の見積もり", phase: "長期競争力・別ケース境界", coverage: "out_of_scope", rationale: "この局面では需要見積もりの実体評価ではなく、後年成否判定との境界を扱うため。" },
+  { axis: "規制・インフラ・政策依存の見積もり", phase: "電池・SDV・提携・供給網設計", coverage: "out_of_scope", rationale: "この局面では政策依存ではなく、電池・SDV・提携の実行能力を中心に扱うため。" },
+  { axis: "規制・インフラ・政策依存の見積もり", phase: "需要変化・競争激化・戦略修正", coverage: "in_scope_unassessed", rationale: "補助金・規制変化への修正能力は評価対象だが、現時点では独立セルとして未評価とする。" },
+  { axis: "規制・インフラ・政策依存の見積もり", phase: "長期競争力・別ケース境界", coverage: "out_of_scope", rationale: "この局面では政策依存の実体評価ではなく、後年成否判定との境界を扱うため。" },
+  { axis: "電池・供給網・コストの見積もり", phase: "EVシフト認識・戦略表明", coverage: "in_scope_unassessed", rationale: "電池コストはEV集中判断の前提だが、初期整理では実行設計局面の電池セルに寄せており、表明局面の独立セルは未評価とする。" },
+  { axis: "電池・供給網・コストの見積もり", phase: "需要変化・競争激化・戦略修正", coverage: "in_scope_unassessed", rationale: "需要変化時の電池コスト・供給網耐久力は評価対象だが、現時点では独立セルとして未評価とする。" },
+  { axis: "電池・供給網・コストの見積もり", phase: "長期競争力・別ケース境界", coverage: "out_of_scope", rationale: "この局面では電池コストの実体評価ではなく、後年資料と当時判断の境界を扱うため。" },
+  { axis: "SDV・ソフトウェア競争の認識", phase: "EVシフト認識・戦略表明", coverage: "in_scope_unassessed", rationale: "SDV競争を初期EV集中判断にどこまで織り込んだかは評価対象だが、現時点では独立セルとして未評価とする。" },
+  { axis: "SDV・ソフトウェア競争の認識", phase: "需要変化・競争激化・戦略修正", coverage: "in_scope_unassessed", rationale: "需要変化・競争激化時のSDV対応は評価対象だが、現時点では独立セルとして未評価とする。" },
+  { axis: "SDV・ソフトウェア競争の認識", phase: "長期競争力・別ケース境界", coverage: "out_of_scope", rationale: "この局面ではSDV能力の実体評価ではなく、後年成否判定との境界を扱うため。" },
+  { axis: "提携・外部依存・実行能力", phase: "EVシフト認識・戦略表明", coverage: "in_scope_unassessed", rationale: "EV集中の初期判断で外部提携依存をどこまで前提化したかは評価対象だが、現時点では実行設計局面の提携セルに寄せているため。" },
+  { axis: "提携・外部依存・実行能力", phase: "需要変化・競争激化・戦略修正", coverage: "in_scope_unassessed", rationale: "提携解消・代替開発への修正能力は評価対象だが、現時点では独立セルとして未評価とする。" },
+  { axis: "提携・外部依存・実行能力", phase: "長期競争力・別ケース境界", coverage: "out_of_scope", rationale: "この局面では提携実行能力の実体評価ではなく、後年成否判定との境界を扱うため。" },
+  { axis: "資本配分・収益耐久力", phase: "EVシフト認識・戦略表明", coverage: "in_scope_unassessed", rationale: "EV集中に伴う投資負担・赤字許容は初期判断の重要論点だが、現時点では修正局面の資本配分セルに寄せているため。" },
+  { axis: "資本配分・収益耐久力", phase: "電池・SDV・提携・供給網設計", coverage: "in_scope_unassessed", rationale: "電池・SDV・提携投資の資本負担は評価対象だが、現時点では独立セルとして未評価とする。" },
+  { axis: "資本配分・収益耐久力", phase: "長期競争力・別ケース境界", coverage: "out_of_scope", rationale: "この局面では資本配分の実体評価ではなく、後年再評価を直接根拠にしない境界を扱うため。" },
+  { axis: "ガバナンス・説明責任・修正基準", phase: "EVシフト認識・戦略表明", coverage: "out_of_scope", rationale: "初期表明局面では戦略判断の内容を扱い、ガバナンス上の開示限界は境界局面でまとめて扱うため。" },
+  { axis: "ガバナンス・説明責任・修正基準", phase: "電池・SDV・提携・供給網設計", coverage: "out_of_scope", rationale: "実行設計局面では電池・SDV・提携論点を扱い、内部の修正基準や説明責任は別局面で扱うため。" },
+];
+
 const evidenceAccessScope = {
   mode: "public_osint",
   description: "公開資料・公式発表・同時代報道・公開市場データに基づく外部監査。",
@@ -853,6 +876,7 @@ export const hondaEvConcentrationCase = {
     },
   ],
   assessmentCells,
+  assessmentCoverage,
   evidence,
   claims,
   evidenceLinks,
