@@ -726,6 +726,27 @@ dd {
 .cell-stack {
   overflow-wrap: anywhere;
 }
+
+.compare-table-wrap {
+  width: 100%;
+  overflow-x: auto;
+}
+
+.compare-table {
+  min-width: 980px;
+}
+
+.compare-active-row {
+  background: #f7fbfd;
+}
+
+.compare-case-button strong {
+  color: var(--ink);
+}
+
+.compare-card {
+  align-content: start;
+}
 .filter-bar {
   display: flex;
   flex-wrap: wrap;

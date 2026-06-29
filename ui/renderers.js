@@ -13,7 +13,7 @@ import {
   statusOrder,
 } from "../data/auditSchema.js?v=20260627-auto-ev-shift-r16";
 
-export function createRenderers(auditData, state) {
+export function createRenderers(auditData, state, allCases = [auditData]) {
 function getAssumption(id) {
   for (const phase of auditData.phases) {
     const found = phase.assumptions.find((item) => item.id === id);
@@ -302,6 +302,123 @@ function renderOverview() {
       <h3>第三者評価対応</h3>
       ${renderAuditBoundary()}
       ${renderAdversarialReview()}
+    </section>
+  `;
+}
+
+function getCaseCompareStats(caseData) {
+  const links = caseData.evidenceLinks || [];
+  const prewar = caseData.preWarChecklist || [];
+  const coverage = caseData.assessmentCoverage || [];
+  const basis = caseData.ratingBasis || [];
+  const basisCellIds = new Set(basis.map((item) => item.cellId));
+  const basisLinks = links.filter((link) => basisCellIds.has(link.assessmentCellId));
+  const relationshipCount = (relationship) => links.filter((link) => link.relationship === relationship).length;
+  const basisWithBalancedLinks = basis.filter((item) => {
+    const cellLinks = links.filter((link) => link.assessmentCellId === item.cellId);
+    return cellLinks.some((link) => link.relationship === "支持") && cellLinks.some((link) => link.relationship === "反証");
+  }).length;
+  const basisWithDecisionTimeEvidence = basis.filter((item) => {
+    const cellLinks = links.filter((link) => link.assessmentCellId === item.cellId);
+    return cellLinks.some((link) => link.timeFit !== "事後" && link.availableAtDecisionTime === true);
+  }).length;
+  const prewarLimited = prewar.filter((item) => item.actuallyEvaluated === "限定的").length;
+  const prewarUnknown = prewar.filter((item) => item.actuallyEvaluated === "不明" || item.noEvidenceReason).length;
+  const inScopeUnassessed = coverage.filter((item) => item.coverage === "in_scope_unassessed").length;
+  const outOfScope = coverage.filter((item) => item.coverage === "out_of_scope").length;
+
+  return {
+    links,
+    basis,
+    basisLinks,
+    supportLinks: relationshipCount("支持"),
+    counterLinks: relationshipCount("反証"),
+    holdLinks: relationshipCount("保留"),
+    directBasisLinks: basisLinks.filter((link) => link.timeFit !== "事後" && link.availableAtDecisionTime === true).length,
+    postHocBasisLinks: basisLinks.filter((link) => link.timeFit === "事後" || link.availableAtDecisionTime === false).length,
+    basisWithBalancedLinks,
+    basisWithDecisionTimeEvidence,
+    prewarLimited,
+    prewarUnknown,
+    inScopeUnassessed,
+    outOfScope,
+  };
+}
+
+function renderCompare() {
+  const rows = allCases.map((caseData) => ({ caseData, stats: getCaseCompareStats(caseData) }));
+
+  return `
+    <section class="section static-section">
+      <h3>横断サマリー</h3>
+      <div class="compare-table-wrap">
+        <table class="evidence-table compare-table">
+          <thead>
+            <tr>
+              <th>ケース</th>
+              <th>補助格付け</th>
+              <th>ratingReadiness</th>
+              <th>主要セル</th>
+              <th>投資前ギャップ</th>
+              <th>空白セル</th>
+              <th>証拠リンク</th>
+            </tr>
+          </thead>
+          <tbody>
+            ${rows
+              .map(
+                ({ caseData, stats }) => `
+                  <tr class="${caseData.warCase.id === auditData.warCase.id ? "compare-active-row" : ""}">
+                    <td>
+                      <button class="link-button compare-case-button" type="button" data-goto-case="${caseData.warCase.id}">
+                        <strong>${caseData.warCase.auditedActor}</strong><br>
+                        <span class="cell-meta">${caseData.warCase.name}</span>
+                      </button>
+                    </td>
+                    <td>${caseData.warCase.rating}<br><span class="cell-meta">${caseData.warCase.uncertainty || "不確実性未設定"}</span></td>
+                    <td>${caseData.ratingReadiness?.value || "未設定"}<br><span class="cell-meta">${caseData.ratingReadiness?.blockers?.length || 0} blockers</span></td>
+                    <td>
+                      ${stats.basisWithBalancedLinks}/${stats.basis.length} 支持・反証あり<br>
+                      <span class="cell-meta">${stats.basisWithDecisionTimeEvidence}/${stats.basis.length} 判断時点証拠あり</span>
+                    </td>
+                    <td>
+                      限定的 ${stats.prewarLimited}<br>
+                      <span class="cell-meta">不明/未収集 ${stats.prewarUnknown}</span>
+                    </td>
+                    <td>
+                      未評価 ${stats.inScopeUnassessed}<br>
+                      <span class="cell-meta">対象外 ${stats.outOfScope}</span>
+                    </td>
+                    <td>
+                      支持 ${stats.supportLinks} / 反証 ${stats.counterLinks}<br>
+                      <span class="cell-meta">主要セル: 判断時点 ${stats.directBasisLinks} / 事後対照 ${stats.postHocBasisLinks}</span>
+                    </td>
+                  </tr>
+                `,
+              )
+              .join("")}
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+    <section class="section">
+      <h3>比較から見える要点</h3>
+      <div class="grid three">
+        ${rows
+          .map(
+            ({ caseData, stats }) => `
+              <div class="mini-card compare-card">
+                <h3>${caseData.warCase.auditedActor}</h3>
+                <p><strong>${caseData.ratingReadiness?.value || "未設定"}</strong></p>
+                <p class="cell-meta">${caseData.ratingReadiness?.rationale || "根拠未設定"}</p>
+                ${renderStringList(caseData.ratingReadiness?.blockers)}
+                <p class="cell-meta">主要セルの片側/時点ギャップ: ${stats.basis.length - stats.basisWithBalancedLinks + stats.basis.length - stats.basisWithDecisionTimeEvidence}</p>
+              </div>
+            `,
+          )
+          .join("")}
+      </div>
     </section>
   `;
 }
@@ -893,6 +1010,7 @@ function renderPreWar() {
 
   return {
     overview: renderOverview,
+    compare: renderCompare,
     timeline: renderTimeline,
     prewar: renderPreWar,
     assessment: renderAssessment,

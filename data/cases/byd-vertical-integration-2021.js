@@ -111,10 +111,10 @@ const evidence = [
 ];
 
 const claims = [
-  { id: "byd_claim_vertical_integration_as_advantage", type: "defense_hypothesis", title: "垂直統合はEV量産の合理的な競争優位だった", summary: "電池・部品・車両の内製は、供給制約とコスト競争への備えとして合理的だった可能性がある。" },
-  { id: "byd_claim_market_policy_concentration_risk", type: "audit_issue", title: "中国NEV市場・政策への集中リスク", summary: "中国市場と政策環境への依存が高く、需要・政策・価格競争の下方リスクを過小評価した可能性がある。" },
-  { id: "byd_claim_price_competition_margin_risk", type: "audit_issue", title: "価格競争下の利益率・資本耐久力リスク", summary: "垂直統合は値下げ余地を生むが、価格競争が激化すると利益率・投資回収を圧迫しうる。" },
-  { id: "byd_claim_public_disclosure_gap", type: "boundary_claim", title: "公開資料だけでは内部判断の深度を断定できない", summary: "年次報告や公式発表は有用だが、内部の代替案比較・撤退基準・地域別採算までは確認できない。" },
+  { id: "byd_claim_vertical_integration_as_advantage", type: "defense_hypothesis", text: "BYDの垂直統合は、電池・部品・車両の内製によってEV量産の供給制約とコスト競争に備える合理的な競争優位だった可能性がある" },
+  { id: "byd_claim_market_policy_concentration_risk", type: "audit_issue", text: "BYDは中国NEV市場と政策環境への依存が高く、需要・政策・価格競争の下方リスクを過小評価した可能性がある" },
+  { id: "byd_claim_price_competition_margin_risk", type: "audit_issue", text: "垂直統合は値下げ余地を生む一方、価格競争が激化すると利益率・資本耐久力・投資回収を圧迫しうる" },
+  { id: "byd_claim_public_disclosure_gap", type: "boundary_claim", text: "公開資料だけでは、内部の代替案比較・撤退基準・地域別採算判断の深度を断定できない" },
 ];
 
 const linkBase = { relevance: "中", reviewState: "要検証" };

@@ -1,5 +1,6 @@
 export const viewMeta = {
   overview: ["戦略概要", "この企業戦略監査の暫定結論は何か？"],
+  compare: ["ケース比較", "3ケースを横断すると、どの監査ギャップが共通し、どこが違うか？"],
   timeline: ["戦略タイムライン", "各戦略判断時点で、当時の情報から見て判断修正は可能だったか？"],
   prewar: ["投資前チェック", "戦略表明前・大規模投資前に評価可能だった項目のうち、評価形跡が欠けているのはどこか？"],
   assessment: ["経営判断監査", "どの評価軸・どの判断時点に、重大な懸念が集中しているか？"],
@@ -235,8 +236,13 @@ export function lintCaseMethodology(caseData) {
   const findings = [];
   const links = Array.isArray(caseData.evidenceLinks) ? caseData.evidenceLinks : [];
   const claims = Array.isArray(caseData.claims) ? caseData.claims : [];
+  const ratingBasis = Array.isArray(caseData.ratingBasis) ? caseData.ratingBasis : [];
+  const preWarChecklist = Array.isArray(caseData.preWarChecklist) ? caseData.preWarChecklist : [];
+  const ratingReadiness = caseData.ratingReadiness;
   const validTimeFits = new Set(["直接", "間接", "事後"]);
+  const validRatingReadinessValues = new Set(["未到達", "限定的", "到達"]);
   const requiredTextFields = ["canSay", "cannotSay", "knownByDecisionMakers", "knownByDecisionMakersBasis"];
+  const ratingBasisEvidenceGaps = [];
 
   links.forEach((link) => {
     requiredTextFields.forEach((field) => {
@@ -279,6 +285,10 @@ export function lintCaseMethodology(caseData) {
     if (link.relationship === "反証") counterByClaim.set(link.claimId, (counterByClaim.get(link.claimId) || 0) + 1);
   });
   claims.forEach((claim) => {
+    if (typeof claim.text !== "string" || claim.text.trim() === "") {
+      findings.push({ type: "missing_claim_text", id: claim.id, severity: "注意" });
+    }
+
     const supports = supportByClaim.get(claim.id) || 0;
     const counters = counterByClaim.get(claim.id) || 0;
     const totalLinks = totalLinksByClaim.get(claim.id) || 0;
@@ -291,6 +301,99 @@ export function lintCaseMethodology(caseData) {
       findings.push({ type: "unsupported_claim", id: claim.id, claimType: claim.type, severity: "注意", counters });
     }
   });
+
+  if (!ratingReadiness || typeof ratingReadiness !== "object") {
+    findings.push({ type: "missing_rating_readiness", severity: "重大" });
+  } else {
+    if (!validRatingReadinessValues.has(ratingReadiness.value)) {
+      findings.push({ type: "invalid_rating_readiness_value", value: ratingReadiness.value, severity: "重大" });
+    }
+    if (typeof ratingReadiness.rationale !== "string" || ratingReadiness.rationale.trim() === "") {
+      findings.push({ type: "missing_rating_readiness_rationale", severity: "重大" });
+    }
+    if (!Array.isArray(ratingReadiness.blockers)) {
+      findings.push({ type: "missing_rating_readiness_blockers", severity: "重大" });
+    }
+    if (ratingReadiness.value !== "到達" && Array.isArray(ratingReadiness.blockers) && ratingReadiness.blockers.length === 0) {
+      findings.push({ type: "empty_rating_readiness_blockers", value: ratingReadiness.value, severity: "注意" });
+    }
+  }
+
+  if (ratingReadiness?.value === "到達") {
+    if (ratingBasis.length === 0) {
+      findings.push({ type: "rating_reached_without_rating_basis", severity: "重大" });
+    }
+    if (ratingBasis.length < 5) {
+      findings.push({ type: "rating_reached_with_too_few_basis_cells", count: ratingBasis.length, severity: "重大" });
+    }
+
+    ratingBasis.forEach((basis, index) => {
+      const basisLinks = links.filter((link) => link.assessmentCellId === basis.cellId);
+      const hasSupport = basisLinks.some((link) => link.relationship === "支持");
+      const hasCounter = basisLinks.some((link) => link.relationship === "反証");
+      const hasDecisionTimeEvidence = basisLinks.some((link) => link.timeFit !== "事後" && link.availableAtDecisionTime === true);
+      const usesPostHocAsDirect = basisLinks.some((link) => link.timeFit === "事後" && link.availableAtDecisionTime !== false);
+
+      if (!hasSupport || !hasCounter) {
+        findings.push({ type: "rating_reached_without_balanced_basis_cell", cellId: basis.cellId, index, hasSupport, hasCounter, severity: "重大" });
+      }
+      if (!hasDecisionTimeEvidence) {
+        findings.push({ type: "rating_reached_without_decision_time_basis", cellId: basis.cellId, index, severity: "重大" });
+      }
+      if (usesPostHocAsDirect) {
+        findings.push({ type: "rating_reached_with_post_hoc_direct_basis", cellId: basis.cellId, index, severity: "重大" });
+      }
+    });
+  }
+
+  ratingBasis.forEach((basis) => {
+    const basisLinks = links.filter((link) => link.assessmentCellId === basis.cellId);
+    const hasSupport = basisLinks.some((link) => link.relationship === "支持");
+    const hasCounter = basisLinks.some((link) => link.relationship === "反証");
+    const hasDecisionTimeEvidence = basisLinks.some((link) => link.timeFit !== "事後" && link.availableAtDecisionTime === true);
+    const hasPostHocEvidence = basisLinks.some((link) => link.timeFit === "事後" || link.availableAtDecisionTime === false);
+
+    if (!hasSupport || !hasCounter || !hasDecisionTimeEvidence || hasPostHocEvidence) {
+      ratingBasisEvidenceGaps.push({
+        cellId: basis.cellId,
+        hasSupport,
+        hasCounter,
+        hasDecisionTimeEvidence,
+        hasPostHocEvidence,
+      });
+    }
+  });
+
+  const preWarG2Gaps = preWarChecklist.filter(
+    (item) =>
+      ["高", "中"].includes(item.exAnteEvaluability) &&
+      (item.actuallyEvaluated === "限定的" || item.actuallyEvaluated === "不明" || Boolean(item.noEvidenceReason)),
+  );
+  const preWarG3Gaps = preWarChecklist.filter(
+    (item) =>
+      item.exAnteEvaluability === "高" &&
+      (item.actuallyEvaluated === "形跡なし" || item.noEvidenceReason),
+  );
+
+  if (ratingReadiness?.value === "到達") {
+    if (preWarG3Gaps.length > 0) {
+      findings.push({ type: "rating_reached_with_g3_gap", count: preWarG3Gaps.length, severity: "重大" });
+    }
+    if (preWarG2Gaps.length > 1) {
+      findings.push({ type: "rating_reached_with_multiple_g2_gaps", count: preWarG2Gaps.length, severity: "重大" });
+    }
+  }
+
+  if (ratingReadiness?.value === "未到達") {
+    const hasConcreteBlocker =
+      (Array.isArray(ratingReadiness.blockers) && ratingReadiness.blockers.length > 0) ||
+      ratingBasisEvidenceGaps.length > 0 ||
+      preWarG2Gaps.length > 1 ||
+      preWarG3Gaps.length > 0;
+    if (!hasConcreteBlocker) {
+      findings.push({ type: "rating_unreached_without_data_gap", severity: "注意" });
+    }
+  }
 
   return findings;
 }

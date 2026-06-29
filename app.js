@@ -13,7 +13,7 @@ const DEFAULT_CASE_ID = "toyota-multi-pathway-2021";
 
 let activeCase = cases.find((item) => item.warCase.id === DEFAULT_CASE_ID) || cases[0];
 let state = stateForCase(activeCase);
-let renderers = createRenderers(activeCase, state);
+let renderers = createRenderers(activeCase, state, cases);
 
 function stateForCase(caseData, activeView = "overview") {
   return {
@@ -142,7 +142,7 @@ function setActiveCase(caseId, options = {}) {
   const currentView = state.activeView;
   activeCase = nextCase;
   state = stateForCase(activeCase, currentView);
-  renderers = createRenderers(activeCase, state);
+  renderers = createRenderers(activeCase, state, cases);
   setActiveView(state.activeView);
   validateActiveCase();
   updateShellCaseMetadata();
